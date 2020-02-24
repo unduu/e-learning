@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
@@ -32,6 +33,8 @@ func main() {
 	authRepo := _authRepo.NewAuthRepository(dbConn)
 	evalauationRepo := _evaluationRepo.NewEvaluationRepository(dbConn)
 
+	router.Use(Cors())
+
 	s := router.Group("")
 	{
 		_authUsecase := _authUsecase.NewAuthUsecase(authRepo)
@@ -41,9 +44,25 @@ func main() {
 		_evaluationHandler.NewHttpAuthHandler(s, m, validator, _evaluationUsecase)
 	}
 
+	config := cors.DefaultConfig()
+	config.AllowMethods = []string{"POST", "OPTIONS", "GET", "PUT", "DELETE"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization", "access-control-allow-origin", "access-control-allow-headers"}
+	config.ExposeHeaders = []string{"Content-Length"}
+	config.AllowOrigins = []string{"*"}
+	router.Use(cors.New(config))
+	router.Use(cors.Default())
+
 	err := http.ListenAndServe(":6000", router)
 	if err != nil {
 		fmt.Println(err)
+	}
+}
+
+func Cors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+		c.Next()
 	}
 }
 
