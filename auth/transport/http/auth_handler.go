@@ -22,8 +22,10 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 		Validator:   v,
 	}
 	router.POST("login", handler.Login)
+	router.GET("logout", mw.AuthMiddleware, handler.Logout)
 }
 
+// Login return auth token
 func (a *AuthHandler) Login(c *gin.Context) {
 	var req RequestLogin
 
@@ -49,11 +51,18 @@ func (a *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	msg := "Welcome Johndoe"
+	msg := "Welcome " + req.Username
 	res := LoginResponse{
 		User:  User{req.Username, "menthor"},
 		Token: token,
 	}
 
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// Logout remove user access token
+func (a *AuthHandler) Logout(c *gin.Context) {
+	msg := "You have successfully logged out"
+	res := make([]string, 0)
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
