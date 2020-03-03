@@ -27,6 +27,7 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 		Validator:         v,
 	}
 	router.GET("test/pre", mw.AuthMiddleware, handler.PreEvaluation)
+	router.POST("test/pre", mw.AuthMiddleware, handler.ProcessEvaluationAnswer)
 }
 
 func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
@@ -94,5 +95,36 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 		res.Test = append(res.Test, q)
 	}
 
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
+	// Form Data
+	var req RequestProcessEvaluationAnswer
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	e.EvaluationUsecase.CompareAnswer(req.Answer)
+
+	msg := "Thank you, We have recieve your answer"
+	res := make([]string, 0)
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

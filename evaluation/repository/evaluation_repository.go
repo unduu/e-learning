@@ -49,3 +49,27 @@ func (a *EvaluationRepository) GetQuestions(page int, limit int) ([]*model.Quest
 
 	return questions, count.Total, err
 }
+
+func (a *EvaluationRepository) GetAnswerByQuestionID(id int) *model.AnswerDB {
+	// DB Response struct
+	answers := make([]*model.AnswerDB, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"id": id,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT id,answer FROM questions WHERE id = :id`)
+	if err != nil {
+		fmt.Println("Error db GetAnswerByQuestionID->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&answers, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	return answers[0]
+}
