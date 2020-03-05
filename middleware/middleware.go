@@ -12,6 +12,10 @@ import (
 	"github.com/e-learning/response"
 )
 
+type UserSession struct {
+	Username string
+}
+
 type Middleware struct {
 }
 
@@ -52,10 +56,17 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	}
 
 	// Grab the token part, what we are truly interested in
+	session := UserSession{}
 	tokenPart := splitted[1]
 	tk := &model.Claims{}
 
 	token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
+		// User logged in session
+		session = UserSession{
+			Username: tk.Username,
+		}
+		m.SetLoggedInUserInfo(session, c)
+
 		return []byte(os.Getenv("token_password")), nil
 	})
 
@@ -72,7 +83,15 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
 	// Call the next handler, which can be another middleware in the chain, or the final handler.
 	c.Next()
+}
+
+func (m *Middleware) SetLoggedInUserInfo(userinfo UserSession, c *gin.Context) {
+	c.Set("userinfo", userinfo)
+}
+
+func (m *Middleware) GetLoggedInUser(c *gin.Context) UserSession {
+	userInfo := c.MustGet("userinfo").(UserSession)
+	return userInfo
 }
