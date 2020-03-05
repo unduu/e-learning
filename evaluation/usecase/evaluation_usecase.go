@@ -41,7 +41,7 @@ func (a *EvaluationUsecase) StartEvaluation(page int, limit int) (model.Assesmen
 	return assesment, totalData
 }
 
-func (a *EvaluationUsecase) CompareAnswer(answer string) {
+func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
 
 	var grade float64
 	var totalRightAnswer int
@@ -74,10 +74,17 @@ func (a *EvaluationUsecase) CompareAnswer(answer string) {
 	}
 	totalQuestions = len(answerArr)
 	totalWrongAnswer = totalQuestions - totalRightAnswer
-	grade = float64(totalRightAnswer / totalQuestions)
+	if totalRightAnswer >= 0 && totalQuestions > 0 {
+		grade = float64(totalRightAnswer) / float64(totalQuestions) * 100
+	}
 
 	fmt.Println("Total Question ", totalQuestions)
 	fmt.Println("Total Right Answer ", totalRightAnswer)
 	fmt.Println("Total Wrong Answer ", totalWrongAnswer)
 	fmt.Println("Grade ", grade)
+}
+
+func (a *EvaluationUsecase) SaveAnswer(username string, testType string, answer string) {
+
+	a.repository.InsertAnswer(username, testType, answer)
 }

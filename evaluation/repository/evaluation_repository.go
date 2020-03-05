@@ -73,3 +73,32 @@ func (a *EvaluationRepository) GetAnswerByQuestionID(id int) *model.AnswerDB {
 
 	return answers[0]
 }
+
+func (a *EvaluationRepository) InsertAnswer(username string, testType string, answer string) (affected int64) {
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"username": username,
+		"type":     testType,
+		"answer":   answer,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`INSERT INTO answers SET username = :username, type = :type, answer = :answer, updated = CURRENT_TIMESTAMP ON DUPLICATE KEY UPDATE updated = CURRENT_TIMESTAMP`)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
+	}
+
+	return affected
+}

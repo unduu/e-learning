@@ -121,8 +121,11 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 		response.RespondErrorJSON(c.Writer, errValidation)
 		return
 	}
+	// User Logged in session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
 
-	e.EvaluationUsecase.CompareAnswer(req.Answer)
+	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer)
 
 	msg := "Thank you, We have recieve your answer"
 	res := make([]string, 0)
