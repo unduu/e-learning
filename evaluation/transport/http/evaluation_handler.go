@@ -1,10 +1,10 @@
 package http
 
 import (
-	"github.com/e-learning/evaluation"
-	customValidator "github.com/e-learning/helper/validator"
-	"github.com/e-learning/middleware"
-	"github.com/e-learning/response"
+	"github.com/unduu/e-learning/evaluation"
+	customValidator "github.com/unduu/e-learning/helper/validator"
+	"github.com/unduu/e-learning/middleware"
+	"github.com/unduu/e-learning/response"
 	"gopkg.in/go-playground/validator.v9"
 	"math"
 	"reflect"

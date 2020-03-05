@@ -11,17 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 
-	_authRepo "github.com/e-learning/auth/repository"
-	_authHandler "github.com/e-learning/auth/transport/http"
-	_authUsecase "github.com/e-learning/auth/usecase"
+	_authRepo "github.com/unduu/e-learning/auth/repository"
+	_authHandler "github.com/unduu/e-learning/auth/transport/http"
+	_authUsecase "github.com/unduu/e-learning/auth/usecase"
 
-	_evaluationRepo "github.com/e-learning/evaluation/repository"
-	_evaluationHandler "github.com/e-learning/evaluation/transport/http"
-	_evaluationUsecase "github.com/e-learning/evaluation/usecase"
+	_evaluationRepo "github.com/unduu/e-learning/evaluation/repository"
+	_evaluationHandler "github.com/unduu/e-learning/evaluation/transport/http"
+	_evaluationUsecase "github.com/unduu/e-learning/evaluation/usecase"
 
-	customValidator "github.com/e-learning/helper/validator"
+	customValidator "github.com/unduu/e-learning/helper/validator"
 
-	"github.com/e-learning/middleware"
+	"github.com/unduu/e-learning/middleware"
 )
 
 func main() {

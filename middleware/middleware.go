@@ -2,14 +2,14 @@ package middleware
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/e-learning/auth/model"
 	"github.com/gin-gonic/gin"
+	"github.com/unduu/e-learning/auth/model"
 	"gopkg.in/go-playground/validator.v9"
 	"os"
 	"strings"
 
-	_customValidator "github.com/e-learning/helper/validator"
-	"github.com/e-learning/response"
+	_customValidator "github.com/unduu/e-learning/helper/validator"
+	"github.com/unduu/e-learning/response"
 )
 
 type UserSession struct {

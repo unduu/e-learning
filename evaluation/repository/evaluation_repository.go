@@ -2,8 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"github.com/e-learning/evaluation/model"
 	"github.com/jmoiron/sqlx"
+	"github.com/unduu/e-learning/evaluation/model"
 )
 
 type EvaluationRepository struct {

@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/e-learning/auth"
-	"github.com/e-learning/auth/model"
+	"github.com/unduu/e-learning/auth"
+	"github.com/unduu/e-learning/auth/model"
 	"os"
 	"time"
 )

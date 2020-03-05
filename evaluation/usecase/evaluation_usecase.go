@@ -3,8 +3,8 @@ package usecase
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e-learning/evaluation"
-	"github.com/e-learning/evaluation/model"
+	"github.com/unduu/e-learning/evaluation"
+	"github.com/unduu/e-learning/evaluation/model"
 )
 
 type EvaluationUsecase struct {

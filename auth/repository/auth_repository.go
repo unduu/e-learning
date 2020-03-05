@@ -2,8 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"github.com/e-learning/auth/model"
 	"github.com/jmoiron/sqlx"
+	"github.com/unduu/e-learning/auth/model"
 )
 
 type AuthRepository struct {
