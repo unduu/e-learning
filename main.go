@@ -46,7 +46,7 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowMethods = []string{"POST", "OPTIONS", "GET", "PUT", "DELETE"}
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization", "access-control-allow-origin", "access-control-allow-headers"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization", "access-control-allow-origin", "access-control-allow-headers", "x-api-key", "x-mock-match-request-body"}
 	config.ExposeHeaders = []string{"Content-Length"}
 	config.AllowOrigins = []string{"*"}
 	router.Use(cors.New(config))
