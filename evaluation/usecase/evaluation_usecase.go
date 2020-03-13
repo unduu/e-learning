@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/unduu/e-learning/evaluation"
 	"github.com/unduu/e-learning/evaluation/model"
+	"strconv"
 )
 
 type EvaluationUsecase struct {
@@ -22,6 +23,44 @@ func (a *EvaluationUsecase) StartEvaluation(page int, limit int) (model.Assesmen
 	assesment.SetDuration()
 
 	questionsList, totalData, err := a.repository.GetQuestions(page, limit)
+
+	if err != nil {
+		fmt.Println("ERROR StartEvaluation : ", err)
+	}
+
+	for _, questionRow := range questionsList {
+		// Decode choices from db then set as choice struct
+		cc := model.Choice{}
+		err := json.Unmarshal([]byte(questionRow.ChoicesDB), &cc)
+		if err != nil {
+			fmt.Println("ERROR StartEvaluation->Unmarshal : ", err)
+		}
+		questionRow.Choices = cc
+		assesment.AddQuestion(questionRow)
+	}
+
+	return assesment, totalData
+}
+
+func (a *EvaluationUsecase) StartPostEvaluation(page int, limit int) (model.Assesment, int) {
+	questionIdArr := []string{}
+	answerArr := []model.Answer{}
+
+	assesment := model.Assesment{Status: "active"}
+	assesment.SetDuration()
+
+	answer := a.repository.GetUserAnswers("johndoe")
+
+	err := json.Unmarshal([]byte(answer.Selected), &answerArr)
+	if err != nil {
+		fmt.Println("ERROR StartPostEvaluation->Unmarshal ", err)
+	}
+
+	for _, row := range answerArr {
+		// List of user pre test question
+		questionIdArr = append(questionIdArr, strconv.Itoa(row.Id))
+	}
+	questionsList, totalData, err := a.repository.GetQuestionByIds(questionIdArr, 1, 20)
 
 	if err != nil {
 		fmt.Println("ERROR StartEvaluation : ", err)
@@ -64,7 +103,7 @@ func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
 		}
 
 		// Answer from db
-		rightAnswerObj := a.repository.GetAnswerByQuestionID(row.Id)
+		rightAnswerObj := a.repository.GetCorrectAnswerByQuestionID(row.Id)
 		rightAnswer := rightAnswerObj.Selected
 
 		// Answer right ?

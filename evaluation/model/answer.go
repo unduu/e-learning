@@ -1,7 +1,12 @@
 package model
 
-type AnswerDB struct {
+type CorrectAnswerDB struct {
 	Id       int    `db:"id"`
+	Selected string `db:"answer"`
+}
+
+type UserAnswerDB struct {
+	Username string `db:"username"`
 	Selected string `db:"answer"`
 }
 
