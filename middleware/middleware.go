@@ -3,17 +3,18 @@ package middleware
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/unduu/e-learning/auth/model"
 	"gopkg.in/go-playground/validator.v9"
 	"os"
 	"strings"
 
+	"github.com/unduu/e-learning/auth/model"
 	_customValidator "github.com/unduu/e-learning/helper/validator"
 	"github.com/unduu/e-learning/response"
 )
 
 type UserSession struct {
-	Username string
+	Username   string
+	StatusCode int
 }
 
 type Middleware struct {
@@ -63,10 +64,9 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
 		// User logged in session
 		session = UserSession{
-			Username: tk.Username,
+			Username:   tk.Username,
+			StatusCode: tk.StatusCode,
 		}
-		m.SetLoggedInUserInfo(session, c)
-
 		return []byte(os.Getenv("token_password")), nil
 	})
 
@@ -83,6 +83,15 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	m.SetLoggedInUserInfo(session, c)
+
+	if !m.IsActivated(session) {
+		response.RespondUnauthorizedJSON(c.Writer, "Please verify your account to access this page")
+		c.Abort()
+		return
+	}
+
 	// Call the next handler, which can be another middleware in the chain, or the final handler.
 	c.Next()
 }
@@ -94,4 +103,11 @@ func (m *Middleware) SetLoggedInUserInfo(userinfo UserSession, c *gin.Context) {
 func (m *Middleware) GetLoggedInUser(c *gin.Context) UserSession {
 	userInfo := c.MustGet("userinfo").(UserSession)
 	return userInfo
+}
+
+func (m *Middleware) IsActivated(userinfo UserSession) bool {
+	if userinfo.StatusCode == 0 {
+		return false
+	}
+	return true
 }

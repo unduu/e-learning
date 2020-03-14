@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/dongri/phonenumber"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -26,11 +27,24 @@ func NewCustomValidator() *CustomValidator {
 	}
 
 	binding.Validator = new(defaultValidator)
-	v, _ := binding.Validator.Engine().(*validator.Validate)
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+
+	if ok {
+		v.RegisterValidation("isphonenumber", func(fl validator.FieldLevel) bool {
+			fieldValue := fl.Field().String()
+			normalize := phonenumber.Parse(fieldValue, "ID")
+			if normalize == "" {
+				return false
+			}
+			return true
+		})
+	}
 
 	if err := en_translations.RegisterDefaultTranslations(v, trans); err != nil {
 		fmt.Println(err)
 	}
+
+	setTranslations(v, trans)
 
 	return &CustomValidator{Validator: v, Translation: trans}
 }
