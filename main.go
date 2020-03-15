@@ -27,8 +27,8 @@ import (
 func main() {
 	dbConn := initDB()
 	router := gin.Default()
-	m := middleware.NewMiddleware()
-	validator := customValidator.NewCustomValidator()
+	m := middleware.NewMiddleware(dbConn)
+	validator := customValidator.NewCustomValidator(dbConn)
 
 	authRepo := _authRepo.NewAuthRepository(dbConn)
 	evalauationRepo := _evaluationRepo.NewEvaluationRepository(dbConn)

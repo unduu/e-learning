@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/unduu/e-learning/auth/model"
 	_customValidator "github.com/unduu/e-learning/helper/validator"
 	"github.com/unduu/e-learning/response"
@@ -17,14 +18,15 @@ type UserSession struct {
 }
 
 type Middleware struct {
+	conn *sqlx.DB
 }
 
-func NewMiddleware() *Middleware {
-	return &Middleware{}
+func NewMiddleware(db *sqlx.DB) *Middleware {
+	return &Middleware{conn: db}
 }
 
 func (m *Middleware) CheckValidate(err error, c *gin.Context) bool {
-	var cv = _customValidator.NewCustomValidator()
+	var cv = _customValidator.NewCustomValidator(m.conn)
 	var errValidation []response.Error
 	for _, fieldErr := range err.(validator.ValidationErrors) {
 		e := fieldErr.Translate(cv.Translation)

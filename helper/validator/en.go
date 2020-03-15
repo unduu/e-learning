@@ -15,4 +15,25 @@ func setTranslations(v *validator.Validate, trans ut.Translator) {
 		t, _ := ut.T("isphonenumber", fieldValueStr)
 		return t
 	})
+
+	_ = v.RegisterTranslation("emailExists", trans, func(ut ut.Translator) error {
+		return ut.Add("emailExists", "{0} already exists", true)
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("emailExists", fe.Field())
+		return t
+	})
+
+	_ = v.RegisterTranslation("phoneExists", trans, func(ut ut.Translator) error {
+		return ut.Add("phoneExists", "{0} already exists", true)
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("phoneExists", fe.Field())
+		return t
+	})
+
+	_ = v.RegisterTranslation("usernameExists", trans, func(ut ut.Translator) error {
+		return ut.Add("usernameExists", "{0} already exists", true)
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("usernameExists", fe.Field())
+		return t
+	})
 }

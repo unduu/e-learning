@@ -2,6 +2,7 @@ package validator
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"reflect"
 	"sync"
 
@@ -18,7 +19,7 @@ type CustomValidator struct {
 	Translation ut.Translator
 }
 
-func NewCustomValidator() *CustomValidator {
+func NewCustomValidator(db *sqlx.DB) *CustomValidator {
 	translator := en.New()
 	uni := ut.New(translator, translator)
 	trans, found := uni.GetTranslator("en")
@@ -37,6 +38,37 @@ func NewCustomValidator() *CustomValidator {
 				return false
 			}
 			return true
+		})
+
+		v.RegisterValidation("emailExists", func(fl validator.FieldLevel) bool {
+			row := db.QueryRow("SELECT count(*) as total FROM users WHERE email=?", fl.Field().String())
+			var exists bool
+			err := row.Scan(&exists)
+			if err != nil {
+				fmt.Println("ERROR emailExists ", err)
+			}
+			return !exists
+		})
+
+		v.RegisterValidation("phoneExists", func(fl validator.FieldLevel) bool {
+			phone := phonenumber.Parse(fl.Field().String(), "ID")
+			row := db.QueryRow("SELECT count(*) as total FROM users WHERE phone=?", phone)
+			var exists bool
+			err := row.Scan(&exists)
+			if err != nil {
+				fmt.Println("ERROR phoneExists ", err)
+			}
+			return !exists
+		})
+
+		v.RegisterValidation("usernameExists", func(fl validator.FieldLevel) bool {
+			row := db.QueryRow("SELECT count(*) as total FROM users WHERE username=?", fl.Field().String())
+			var exists bool
+			err := row.Scan(&exists)
+			if err != nil {
+				fmt.Println("ERROR usernameExists ", err)
+			}
+			return !exists
 		})
 	}
 

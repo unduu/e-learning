@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/dongri/phonenumber"
 	"github.com/gin-gonic/gin"
 	"github.com/unduu/e-learning/auth"
 	customValidator "github.com/unduu/e-learning/helper/validator"
@@ -80,7 +81,8 @@ func (a *AuthHandler) Register(c *gin.Context) {
 	}
 
 	// Processing
-	verificationCode, _ := a.AuthUsecase.Register(req.Fullname, req.Phone, req.Email, req.Username, req.Password)
+	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
+	verificationCode, _ := a.AuthUsecase.Register(req.Fullname, phoneNormalize, req.Email, req.Username, req.Password)
 	user, token := a.AuthUsecase.Login(req.Username, req.Password)
 
 	// Respponse
