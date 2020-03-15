@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"crypto/md5"
+	"crypto/rand"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/unduu/e-learning/auth"
 	"github.com/unduu/e-learning/auth/model"
+	"io"
 	"os"
 	"time"
 )
@@ -20,6 +22,7 @@ func NewAuthUsecase(repository auth.Repository) *AuthUsecase {
 	}
 }
 
+// Login user to system
 func (a *AuthUsecase) Login(username string, password string) (user *model.User, tokenString string) {
 	passMD5 := md5.Sum([]byte(password))
 	passMD5String := fmt.Sprintf("%x", passMD5)
@@ -47,7 +50,9 @@ func (a *AuthUsecase) Login(username string, password string) (user *model.User,
 	return user, tokenString
 }
 
-func (a *AuthUsecase) Register(fullname string, phone string, email string, username string, password string) (affected int64) {
+// Register new user
+func (a *AuthUsecase) Register(fullname string, phone string, email string, username string, password string) (verifivationCode string, affected int64) {
+	vcode := EncodeToString(6)
 	passMD5 := md5.Sum([]byte(password))
 	user := model.User{
 		Username:   username,
@@ -60,5 +65,26 @@ func (a *AuthUsecase) Register(fullname string, phone string, email string, user
 		Role:       "menthor",
 	}
 
-	return a.repository.InsertNewUser(user)
+	return vcode, a.repository.InsertNewUser(user, vcode)
+}
+
+// Register new user
+func (a *AuthUsecase) Verify(username, code string) (affected int64) {
+	isValid := a.repository.UpdateUserStatus(username, code)
+	return isValid
+}
+
+// EncodeToString return auto generated 6 digit number
+func EncodeToString(max int) string {
+	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+
+	b := make([]byte, max)
+	n, err := io.ReadAtLeast(rand.Reader, b, max)
+	if n != max {
+		panic(err)
+	}
+	for i := 0; i < len(b); i++ {
+		b[i] = table[int(b[i])%len(table)]
+	}
+	return string(b)
 }

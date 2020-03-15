@@ -14,3 +14,8 @@ type RequestRegister struct {
 	Username string `form:"username" json:"username" xml:"username" binding:"required"`
 	Password string `form:"password" json:"password" xml:"password" binding:"required,min=8"`
 }
+
+// Request verify
+type RequestVerify struct {
+	Code string `form:"code" json:"code" xml:"code"  binding:"required"`
+}

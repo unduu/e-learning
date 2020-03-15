@@ -11,3 +11,10 @@ type LoginResponse struct {
 	User  User
 	Token string `json:"token"`
 }
+
+// Temp response after register a new user contain activation code data
+type LoginResponseTemp struct {
+	User       User
+	Token      string `json:"token"`
+	Activation string `json:"activation"`
+}

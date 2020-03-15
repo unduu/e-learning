@@ -3,13 +3,12 @@ package middleware
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/go-playground/validator.v9"
-	"os"
-	"strings"
-
 	"github.com/unduu/e-learning/auth/model"
 	_customValidator "github.com/unduu/e-learning/helper/validator"
 	"github.com/unduu/e-learning/response"
+	"gopkg.in/go-playground/validator.v9"
+	"os"
+	"strings"
 )
 
 type UserSession struct {
@@ -38,6 +37,25 @@ func (m *Middleware) CheckValidate(err error, c *gin.Context) bool {
 }
 
 func (m *Middleware) AuthMiddleware(c *gin.Context) {
+	session := m.ValidateToken(c)
+	m.SetLoggedInUserInfo(session, c)
+
+	if !m.IsActivated(session) {
+		response.RespondUnauthorizedJSON(c.Writer, "Please verify your account to access this page")
+		c.Abort()
+		return
+	}
+}
+
+func (m *Middleware) TokenCheckMiddleware(c *gin.Context) {
+	session := m.ValidateToken(c)
+	m.SetLoggedInUserInfo(session, c)
+	// Call the next handler, which can be another middleware in the chain, or the final handler.
+	c.Next()
+}
+
+func (m *Middleware) ValidateToken(c *gin.Context) UserSession {
+	session := UserSession{}
 	// Grab the token from the header
 	tokenHeader := c.GetHeader("Authorization")
 
@@ -45,7 +63,7 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	if tokenHeader == "" {
 		response.RespondUnauthorizedJSON(c.Writer, "Missing auth token")
 		c.Abort()
-		return
+		return session
 	}
 
 	// The token normally comes in format `Bearer {token-body}`, we check if the retrieved token matched this requirement
@@ -53,11 +71,10 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	if len(splitted) != 2 {
 		response.RespondUnauthorizedJSON(c.Writer, "Invalid/Malformed auth token")
 		c.Abort()
-		return
+		return session
 	}
 
 	// Grab the token part, what we are truly interested in
-	session := UserSession{}
 	tokenPart := splitted[1]
 	tk := &model.Claims{}
 
@@ -74,26 +91,17 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	if err != nil {
 		response.RespondUnauthorizedJSON(c.Writer, "Malformed authentication token")
 		c.Abort()
-		return
+		return session
 	}
 
 	// Token is invalid, maybe not signed on this server
 	if !token.Valid {
 		response.RespondUnauthorizedJSON(c.Writer, "Token is not valid.")
 		c.Abort()
-		return
+		return session
 	}
 
-	m.SetLoggedInUserInfo(session, c)
-
-	if !m.IsActivated(session) {
-		response.RespondUnauthorizedJSON(c.Writer, "Please verify your account to access this page")
-		c.Abort()
-		return
-	}
-
-	// Call the next handler, which can be another middleware in the chain, or the final handler.
-	c.Next()
+	return session
 }
 
 func (m *Middleware) SetLoggedInUserInfo(userinfo UserSession, c *gin.Context) {

@@ -37,23 +37,53 @@ func (a *AuthRepository) GetByUsernamePassword(username string, password string)
 	return &menthor, err
 }
 
-func (a *AuthRepository) InsertNewUser(user model.User) (affected int64) {
+func (a *AuthRepository) InsertNewUser(user model.User, verifCode string) (affected int64) {
 	// Data for query
 	queryParams := map[string]interface{}{
-		"username":    user.Username,
-		"password":    user.Password,
-		"role":        user.Role,
-		"fullname":    user.Fullname,
-		"phone":       user.Phone,
-		"email":       user.Email,
-		"status":      user.Status,
-		"status_code": user.StatusCode,
+		"username":          user.Username,
+		"password":          user.Password,
+		"role":              user.Role,
+		"fullname":          user.Fullname,
+		"phone":             user.Phone,
+		"email":             user.Email,
+		"status":            user.Status,
+		"status_code":       user.StatusCode,
+		"verification_code": verifCode,
 	}
 
 	// Compose query
 	query, err := a.conn.PrepareNamed(`INSERT INTO users 
 							SET username = :username, password = :password, role = :role, fullname = :fullname, 
-								phone = :phone, email = :email, status = :status, status_code = :status_code`)
+								phone = :phone, email = :email, status = :status, status_code = :status_code, verification_code = :verification_code`)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
+	}
+
+	return affected
+}
+
+func (a *AuthRepository) UpdateUserStatus(username string, code string) (affected int64) {
+	// Data for query
+	queryParams := map[string]interface{}{
+		"status":            "active",
+		"status_code":       1,
+		"verification_code": code,
+		"username":          username,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`UPDATE users SET status = :status, status_code = :status_code WHERE verification_code = :verification_code AND username = :username`)
 	if err != nil {
 		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
 	}
