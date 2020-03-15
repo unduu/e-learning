@@ -1,0 +1,113 @@
+-- MySQL dump 10.13  Distrib 5.7.29, for Linux (x86_64)
+--
+-- Host: 127.0.0.1    Database: elearning
+-- ------------------------------------------------------
+-- Server version	5.7.29-0ubuntu0.18.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `answers`
+--
+
+DROP TABLE IF EXISTS `answers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `answers` (
+  `username` varchar(255) NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `answer` text NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`username`,`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `answers`
+--
+
+LOCK TABLES `answers` WRITE;
+/*!40000 ALTER TABLE `answers` DISABLE KEYS */;
+INSERT INTO `answers` VALUES ('johndoe','pretest','[{\"id\":1,\"answer\":[2]},{\"id\":2,\"answer\":[2]},{\"id\":3,\"answer\":[3]},{\"id\":4,\"answer\":[3]},{\"id\":5,\"answer\":[2]},{\"id\":6,\"answer\":[3]},{\"id\":7,\"answer\":[3]},{\"id\":8,\"answer\":[1]},{\"id\":9,\"type\":\"multiple_choice\",\"choices\":{\"type\":\"text\",\"options\":[\"27\",\"17\",\"12\",\"22\"]},\"answer\":[0]},{\"id\":10,\"answer\":[0]},{\"id\":11,\"answer\":[2]},{\"id\":12,\"answer\":[3]},{\"id\":13,\"answer\":[]},{\"id\":14,\"answer\":[1]},{\"id\":15,\"answer\":[4]}]','2020-03-13 21:48:24');
+/*!40000 ALTER TABLE `answers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `questions`
+--
+
+DROP TABLE IF EXISTS `questions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `questions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(20) DEFAULT NULL,
+  `attachment_type` varchar(10) DEFAULT NULL,
+  `attachment` varchar(255) DEFAULT NULL,
+  `question` text,
+  `choices` varchar(255) DEFAULT NULL,
+  `answer` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `questions`
+--
+
+LOCK TABLES `questions` WRITE;
+/*!40000 ALTER TABLE `questions` DISABLE KEYS */;
+INSERT INTO `questions` VALUES (1,'multiple_choice','','','To make a dozen cookies Trish needs 1/4 cup of butter. She wants to make 9 dozen cookies. How much butter does she need?','{\"type\":\"text\",\"options\":[\"2 1/4 cups\",\"2 cups\",\"2 1/2 cups\",\"3 cups\"]}','[2]'),(2,'multiple_choice','video','http://clips.vorwaerts-gmbh.de/VfE_html5.mp4','Select the word that does not belong','{\"type\":\"text\",\"options\":[\"precarious\",\"obtuse\",\"hazard\",\"perilous\"]}','[3]'),(3,'multiple_choice','image','https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=Problem?','A marathon is 26.2 miles. If Sally ran a marathon in 3 hours and 3 minutes, what was her approximate pace?','{\"type\":\"text\",\"options\":[\"8 minutes\",\"10 minutes\",\"7 minutes\",\"9 minutes\"]}','[1]'),(4,'multiple_choice','','','A candy maker makes two sizes of candies. Using the smaller size, a full jar will contain 120 pieces of candy. Using the larger candies a jar will contain 80 pieces of candy. The candy maker has a strict rule that no jars will contain a mix of small and large candies. If a store has room for 15 jars and they want 1560 total pieces of candy, how many jars will contain smaller candies?','{\"type\":\"text\",\"options\":[\"9\",\"4\",\"2\",\"12\"]}','[0]'),(5,'multiple_choice','','','Dog is to veterinarian as ___ is to dentist','{\"type\":\"image\",\"options\":[\"https://fakeimg.pl/200x100/282828/eae0d0/?retina=1\",\"https://fakeimg.pl/200x100/282828/eae0d0/?retina=1\",\"https://fakeimg.pl/200x100/282828/eae0d0/?retina=1\",\"https://fakeimg.pl/200x100/282828/eae0d0/?retina=1\"]}','[3]'),(6,'multiple_choice','','','Select the word that is different from the others','{\"type\":\"text\",\"options\":[\"ample\",\"coin\",\"token\",\"change\"]}','[2]'),(7,'multiple_choice','','','Over the course of two weeks, Al spent $105.00 on lunch. What was the average cost per day?','{\"type\":\"text\",\"options\":[\"$7.25\",\"$5.75\",\"$7.50\",\"$8.05\"]}','[1]'),(8,'multiple_choice','','','If the first two statements are true, the third statement is true? false? not certain?','{\"type\":\"text\",\"options\":[\"True\",\"false\",\"Not Certain\"]}','[2]'),(9,'multiple_choice','','','A girl is 21 years old and her brother is a third her age. When the girl is 36, what will be the age of her brother?','{\"type\":\"text\",\"options\":[\"27\",\"17\",\"12\",\"22\"]}','[1]'),(10,'multiple_choice','','','Sand is to beach as ____ is to road','{\"type\":\"text\",\"options\":[\"signs\",\"cars\",\"paint\",\"ashpalt\"]}','[3]'),(11,'multiple_choice','','','MONSOON AGATE. These words are:','{\"type\":\"text\",\"options\":[\"opposite\",\"unable to answer\",\"similar\",\"not related\"]}','[1]'),(12,'multiple_choice','','','How many ounces are in a pound and a half?','{\"type\":\"text\",\"options\":[\"16\",\"18\",\"32\",\"24\"]}','[3]'),(13,'multiple_choice','','','Which word does not belong?','{\"type\":\"text\",\"options\":[\"abhor\",\"enamored\",\"love\",\"attract\"]}','[0]'),(14,'multiple_choice','','','How many sides does a septagon have?','{\"type\":\"text\",\"options\":[\"7\",\"16\",\"5\",\"8\"]}','[3]'),(15,'multiple_choice','','','Miguel found it impossible to _________ himself from his mangled car after the accident.','{\"type\":\"text\",\"options\":[\"extricate\",\"defend\",\"complicate\",\"ashinitiatepalt\",\"dispose\"]}','[1]');
+/*!40000 ALTER TABLE `questions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `username` varchar(20) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role` varchar(10) NOT NULL DEFAULT 'menthor',
+  `fullname` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'inactive',
+  `status_code` tinyint(1) NOT NULL DEFAULT '0',
+  `verification_code` varchar(10) NOT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES ('andi','d8578edf8458ce06fbc5bb76a58c5ca4','menthor','','','','active',1,'640166'),('gordon','7a034553a5cdf69f99e47814361b9721','menthor','Adrian Gordon','081-454-0665','adrian.gordon@example.com','active',1,'553116'),('johndoe','827ccb0eea8a706c4c34a16891f84e7b','admin','','','','active',1,'195174'),('natalie','08956bea986142a596e52bab10287fb7','menthor','Natalie Edwards','081-454-0665','natalie.edwards@example.com','inactive',0,'451075'),('silverswan131','36e5371ad91c9d2d09e9d7c0e76055db','menthor','brad gibson','081-454-0666','brad.gibson@example.com','active',1,'273898'),('Winifred','a7fd1c347fb59fca780b86c367632b68','menthor','Winifred Ferenc','08623345566','wferenc0@oracle.com','active',1,'997606');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-03-15 15:23:32
