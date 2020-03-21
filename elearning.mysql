@@ -87,6 +87,8 @@ CREATE TABLE `users` (
   `status` varchar(20) NOT NULL DEFAULT 'inactive',
   `status_code` tinyint(1) NOT NULL DEFAULT '0',
   `verification_code` varchar(10) NOT NULL,
+  `password_key` varchar(10) NOT NULL DEFAULT '',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -97,7 +99,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('andi','d8578edf8458ce06fbc5bb76a58c5ca4','menthor','andi faizal','6285255753539','andifaizal@example.com','active',1,'640166'),('christy','0d2546d6893324e6fe7f6027dfa0c090','menthor','Christy Morrison','62814540665','christy.morrison@example.com','inactive',0,'235815'),('gordon','7a034553a5cdf69f99e47814361b9721','menthor','Adrian Gordon','62814540165','adrian.gordon@example.com','active',1,'553116'),('johndoe','827ccb0eea8a706c4c34a16891f84e7b','admin','john doe','62814540623','johndoe@gmail.com','active',1,'195174'),('natalie','08956bea986142a596e52bab10287fb7','menthor','Natalie Edwards','62814540669','natalie.edwards@example.com','inactive',0,'451075'),('silverswan131','36e5371ad91c9d2d09e9d7c0e76055db','menthor','brad gibson','62814540666','brad.gibson@example.com','active',1,'273898'),('soham','a0a8416e386c7bf4e5cae1c362106e95','menthor','Soham Lewis','62814540662','soham.lewis@example.com','inactive',0,'210684'),('stanley','64202a21204b1bfc334590c028bab2bf','menthor','Jo Stanley','62814540345','jo.stanley@example.com','inactive',0,'394676'),('wanda','295ae6bbb074b556aa716b53a8ad9a9f','menthor','Wanda Alexander','62814541345','wanda.alexander@example.com','inactive',0,'301429'),('Winifred','a7fd1c347fb59fca780b86c367632b68','menthor','Winifred Ferenc','62814540661','wferenc0@oracle.com','active',1,'997606');
+INSERT INTO `users` VALUES ('andi','d8578edf8458ce06fbc5bb76a58c5ca4','menthor','andi faizal','6285255753539','andifaizal@example.com','active',1,'640166','','2020-03-21 01:33:22'),('aubree','79d9c4cdc009f586adb12de26eb9503d','menthor','Aubree Craig','62814241343','aubree.craig@example.com','active',1,'916885','','2020-03-21 01:34:02'),('christy','432f45b44c432414d2f97df0e5743818','menthor','Christy Morrison','62814540665','christy.morrison@example.com','active',1,'235815','','2020-03-21 01:33:22'),('gordon','7a034553a5cdf69f99e47814361b9721','menthor','Adrian Gordon','62814540165','adrian.gordon@example.com','active',1,'553116','','2020-03-21 01:33:22'),('hector','76b33441334a9175cc9d405ef1d4e6a4','menthor','Hector Rice','62814241241','hector.rice@example.com','inactive',0,'861603','','2020-03-21 01:33:22'),('johndoe','827ccb0eea8a706c4c34a16891f84e7b','admin','john doe','62814540623','johndoe@gmail.com','active',1,'195174','','2020-03-21 01:33:22'),('natalie','08956bea986142a596e52bab10287fb7','menthor','Natalie Edwards','62814540669','natalie.edwards@example.com','inactive',0,'451075','','2020-03-21 01:33:22'),('silverswan131','36e5371ad91c9d2d09e9d7c0e76055db','menthor','brad gibson','62814540666','brad.gibson@example.com','active',1,'273898','','2020-03-21 01:33:22'),('soham','a0a8416e386c7bf4e5cae1c362106e95','menthor','Soham Lewis','62814540662','soham.lewis@example.com','inactive',0,'210684','','2020-03-21 01:33:22'),('stanley','64202a21204b1bfc334590c028bab2bf','menthor','Jo Stanley','62814540345','jo.stanley@example.com','inactive',0,'394676','','2020-03-21 01:33:22'),('wanda','295ae6bbb074b556aa716b53a8ad9a9f','menthor','Wanda Alexander','62814541345','wanda.alexander@example.com','inactive',0,'301429','','2020-03-21 01:33:22'),('Winifred','a7fd1c347fb59fca780b86c367632b68','menthor','Winifred Ferenc','62814540661','wferenc0@oracle.com','active',1,'997606','','2020-03-21 01:33:22');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -110,4 +112,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-15 17:15:47
+-- Dump completed on 2020-03-21  8:37:12
