@@ -23,9 +23,11 @@ func NewHttpLearningHandler(router *gin.RouterGroup, mw *middleware.Middleware, 
 		Validator:       v,
 	}
 	router.GET("module", mw.AuthMiddleware, handler.ModuleList)
+	router.GET("module/:alias/content", mw.AuthMiddleware, handler.LearningContent)
 
 }
 
+// ModuleList return list of courses / modules
 func (l *LearningHandler) ModuleList(c *gin.Context) {
 	// Logged in User Session
 	loggedIn := l.Middleware.GetLoggedInUser(c)
@@ -34,10 +36,10 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 	courses := l.LearningUsecase.GetCourseList()
 	moduleArr := []Module{}
 	for _, course := range courses {
-		totalLessons := strconv.Itoa(course.TotalLesson) + " Lessons"
+		totalLessons := strconv.Itoa(course.GetTotalLesson()) + " Lessons"
 
 		// Formatting time duration
-		courseDuration := model.NewCourseDuration(course.Duration)
+		courseDuration := model.CourseDuration{Duration: course.CountDuration()}
 
 		status, statusCode := course.GetParticipantStatus(loggedIn.Username)
 
@@ -55,7 +57,43 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 
 	// Response
 	msg := "Learning module list"
-	res := ModulesResponse{Modules: moduleArr}
+	res := ResponseModuleList{Modules: moduleArr}
+
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// Learning return course content
+func (l *LearningHandler) LearningContent(c *gin.Context) {
+	// Path param
+	alias := c.Params.ByName("alias")
+
+	// Processing
+	contentArr := []Section{}
+	course := l.LearningUsecase.GetCourseLessons(alias)
+	for _, sectionObj := range course.Sections {
+		lessonResArr := []Lesson{}
+		for _, lessonObj := range sectionObj.Lessons {
+			// Formatting time duration
+			courseDuration := model.CourseDuration{Duration: lessonObj.Duration}
+			lessonRes := Lesson{
+				Type:     lessonObj.Type,
+				Title:    lessonObj.Title,
+				Duration: courseDuration.Minute(),
+				Video:    lessonObj.Video,
+			}
+			lessonResArr = append(lessonResArr, lessonRes)
+		}
+		sectionRes := Section{
+			Section: sectionObj.Name,
+			Name:    sectionObj.Desc,
+			Lessons: lessonResArr,
+		}
+		contentArr = append(contentArr, sectionRes)
+	}
+
+	// Response
+	msg := "Learning module list"
+	res := ResponseLearningContent{Content: contentArr}
 
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

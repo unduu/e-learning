@@ -6,8 +6,8 @@ type Course struct {
 	Subtitle     string
 	Alias        string
 	TotalLesson  int
-	Duration     int
 	Participants []*Participant
+	Sections     []*Section
 }
 
 func (c *Course) AddParticipant(users []*Participant) {
@@ -33,4 +33,33 @@ func (c *Course) GetParticipantStatus(username string) (status string, code int)
 	}
 
 	return status, code
+}
+
+func (c *Course) AddSection(section *Section) {
+	c.Sections = append(c.Sections, section)
+}
+
+func (c *Course) GetSection(name string) *Section {
+	for _, section := range c.Sections {
+		if section.Name == name {
+			return section
+		}
+	}
+	return nil
+}
+
+func (c *Course) CountDuration() (total int) {
+	for _, section := range c.Sections {
+		for _, lesson := range section.Lessons {
+			total = total + lesson.Duration
+		}
+	}
+	return total
+}
+
+func (c *Course) GetTotalLesson() (total int) {
+	for _, section := range c.Sections {
+		total = len(section.Lessons)
+	}
+	return total
 }

@@ -63,3 +63,51 @@ func (a *LearningRepository) GetParticipantByCourse(id int) []*model.Participant
 
 	return participants
 }
+
+func (a *LearningRepository) GetCourseByAlias(alias string) *model.Course {
+	// DB Response struct
+	courses := make([]*model.Course, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"alias": alias,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT id,alias,title,subtitle FROM courses WHERE alias = :alias LIMIT 1`)
+	if err != nil {
+		fmt.Println("Error db GetCourseByAlias->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&courses, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetCourseByAlias->query.Get : ", err)
+	}
+
+	return courses[0]
+}
+
+func (a *LearningRepository) GetLessonsByCourseId(id int) []*model.SectionLessons {
+	// DB Response struct
+	sectionLessons := make([]*model.SectionLessons, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"course_id": id,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT section_name,section_desc,type,title,duration,content FROM course_contents WHERE course_id = :course_id`)
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&sectionLessons, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->query.Get : ", err)
+	}
+
+	return sectionLessons
+}

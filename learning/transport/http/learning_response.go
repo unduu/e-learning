@@ -10,6 +10,23 @@ type Module struct {
 	StatusCode  int    `json:"status_code"`
 }
 
-type ModulesResponse struct {
+type ResponseModuleList struct {
 	Modules []Module `json:"modules"`
+}
+
+type Lesson struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Duration string `json:"duration"`
+	Video    string `json:"video"`
+}
+
+type Section struct {
+	Section string   `json:"section"`
+	Name    string   `json:"name"`
+	Lessons []Lesson `json:"lessons"`
+}
+
+type ResponseLearningContent struct {
+	Content []Section `json:"content"`
 }
