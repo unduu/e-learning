@@ -19,6 +19,10 @@ import (
 	_evaluationHandler "github.com/unduu/e-learning/evaluation/transport/http"
 	_evaluationUsecase "github.com/unduu/e-learning/evaluation/usecase"
 
+	_learningRepo "github.com/unduu/e-learning/learning/repository"
+	_learningHandler "github.com/unduu/e-learning/learning/transport/http"
+	_learningUsecase "github.com/unduu/e-learning/learning/usecase"
+
 	customValidator "github.com/unduu/e-learning/helper/validator"
 
 	"github.com/unduu/e-learning/middleware"
@@ -32,6 +36,7 @@ func main() {
 
 	authRepo := _authRepo.NewAuthRepository(dbConn)
 	evalauationRepo := _evaluationRepo.NewEvaluationRepository(dbConn)
+	learningRepo := _learningRepo.NewLearningRepository(dbConn)
 
 	router.Use(Cors())
 
@@ -42,6 +47,9 @@ func main() {
 
 		_evaluationUsecase := _evaluationUsecase.NewEvaluationUsecase(evalauationRepo)
 		_evaluationHandler.NewHttpAuthHandler(s, m, validator, _evaluationUsecase)
+
+		_learningUsecase := _learningUsecase.NewLearningUsecase(learningRepo)
+		_learningHandler.NewHttpLearningHandler(s, m, validator, _learningUsecase)
 	}
 
 	config := cors.DefaultConfig()
