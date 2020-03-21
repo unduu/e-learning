@@ -26,6 +26,8 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.GET("logout", mw.AuthMiddleware, handler.Logout)
 	router.POST("register", handler.Register)
 	router.POST("register/verification", mw.TokenCheckMiddleware, handler.Verify)
+	router.POST("password/forgot", handler.ForgotPassword)
+	router.POST("password/reset", handler.ResetPassword)
 }
 
 // Login return auth token
@@ -124,6 +126,59 @@ func (a *AuthHandler) Verify(c *gin.Context) {
 		return
 	}
 	msg := "Your account is activated"
+	res := make([]string, 0)
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// Forgot to reset user password
+func (a *AuthHandler) ForgotPassword(c *gin.Context) {
+	// Request validation
+	var req RequestForgotPassword
+	err := c.ShouldBind(&req)
+	if err != nil {
+		var errValidation []response.Error
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(a.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	// Processing
+	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
+	_, code := a.AuthUsecase.ForgotPassword(phoneNormalize)
+
+	// Response
+	msg := "We have sent a confirmation code to reset your password"
+	//res := make([]string, 0)
+	res := ForgotPasswordResponseTemp{ConfirmationCode: code}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// Forgot to reset user password
+func (a *AuthHandler) ResetPassword(c *gin.Context) {
+	// Request validation
+	var req RequestResetPassword
+	err := c.ShouldBind(&req)
+	if err != nil {
+		var errValidation []response.Error
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(a.Validator.Translation)
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	// Processing
+	a.AuthUsecase.ResetPassword(req.PasswordNew, req.PasswordKey)
+
+	// Response
+	msg := "Your password has been reset successfully"
 	res := make([]string, 0)
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

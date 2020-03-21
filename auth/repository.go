@@ -6,4 +6,6 @@ type Repository interface {
 	GetByUsernamePassword(username string, password string) (*model.User, error)
 	InsertNewUser(user model.User, verifCode string) (affected int64)
 	UpdateUserStatus(username string, code string) (affected int64)
+	InsertPasswordKey(phone string, passkey string) (affected int64)
+	UpdateNewPassword(password string, passkey string) (affected int64)
 }

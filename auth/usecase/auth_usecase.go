@@ -68,9 +68,23 @@ func (a *AuthUsecase) Register(fullname string, phone string, email string, user
 	return vcode, a.repository.InsertNewUser(user, vcode)
 }
 
-// Register new user
+// Verify make sure registered email or phone is valid
 func (a *AuthUsecase) Verify(username, code string) (affected int64) {
 	isValid := a.repository.UpdateUserStatus(username, code)
+	return isValid
+}
+
+// ForgotPassword send confirmation to reset or create new password
+func (a *AuthUsecase) ForgotPassword(phone string) (affected int64, passKey string) {
+	passKey = EncodeToString(6)
+	isValid := a.repository.InsertPasswordKey(phone, passKey)
+	return isValid, passKey
+}
+
+// ResetPassword allow user to create new password
+func (a *AuthUsecase) ResetPassword(password string, passkey string) (affected int64) {
+	passMD5 := md5.Sum([]byte(password))
+	isValid := a.repository.UpdateNewPassword(fmt.Sprintf("%x", passMD5), passkey)
 	return isValid
 }
 

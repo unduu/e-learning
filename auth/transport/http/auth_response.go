@@ -18,3 +18,8 @@ type LoginResponseTemp struct {
 	Token      string `json:"token"`
 	Activation string `json:"activation"`
 }
+
+// Temp response after forgot password contain confirmation code data
+type ForgotPasswordResponseTemp struct {
+	ConfirmationCode string `json:"code"`
+}

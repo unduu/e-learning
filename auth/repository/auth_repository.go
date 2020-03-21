@@ -36,7 +36,6 @@ func (a *AuthRepository) GetByUsernamePassword(username string, password string)
 
 	return &menthor, err
 }
-
 func (a *AuthRepository) InsertNewUser(user model.User, verifCode string) (affected int64) {
 	// Data for query
 	queryParams := map[string]interface{}{
@@ -72,7 +71,6 @@ func (a *AuthRepository) InsertNewUser(user model.User, verifCode string) (affec
 
 	return affected
 }
-
 func (a *AuthRepository) UpdateUserStatus(username string, code string) (affected int64) {
 	// Data for query
 	queryParams := map[string]interface{}{
@@ -97,6 +95,58 @@ func (a *AuthRepository) UpdateUserStatus(username string, code string) (affecte
 	affected, err = result.RowsAffected()
 	if err != nil {
 		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
+	}
+
+	return affected
+}
+func (a *AuthRepository) InsertPasswordKey(phone string, passkey string) (affected int64) {
+	// Data for query
+	queryParams := map[string]interface{}{
+		"phone":        phone,
+		"password_key": passkey,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`UPDATE users SET password_key = :password_key WHERE phone = :phone`)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
+	}
+
+	return affected
+}
+func (a *AuthRepository) UpdateNewPassword(password string, passkey string) (affected int64) {
+	// Data for query
+	queryParams := map[string]interface{}{
+		"password":     password,
+		"password_key": passkey,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`UPDATE users SET password = :password, password_key = "" WHERE password_key = :password_key`)
+	if err != nil {
+		fmt.Println("Error db UpdateNewPassword->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db UpdateNewPassword->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db UpdateNewPassword->RowsAffected : ", err)
 	}
 
 	return affected
