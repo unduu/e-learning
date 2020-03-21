@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"reflect"
+	"strings"
 	"sync"
 
 	"github.com/dongri/phonenumber"
@@ -31,6 +32,15 @@ func NewCustomValidator(db *sqlx.DB) *CustomValidator {
 	v, ok := binding.Validator.Engine().(*validator.Validate)
 
 	if ok {
+		// Using tag json, form as a field error instead of struct field
+		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+			if name == "-" {
+				return ""
+			}
+			return name
+		})
+
 		v.RegisterValidation("isphonenumber", func(fl validator.FieldLevel) bool {
 			fieldValue := fl.Field().String()
 			normalize := phonenumber.Parse(fieldValue, "ID")
@@ -61,6 +71,20 @@ func NewCustomValidator(db *sqlx.DB) *CustomValidator {
 			return !exists
 		})
 
+		v.RegisterValidation("isValidPhone", func(fl validator.FieldLevel) bool {
+			phone := phonenumber.Parse(fl.Field().String(), "ID")
+			row := db.QueryRow("SELECT count(*) as total FROM users WHERE phone=?", phone)
+			var valid bool
+			err := row.Scan(&valid)
+			if err != nil {
+				fmt.Println("ERROR isValidPhone ", err)
+			}
+			if valid {
+				return true
+			}
+			return false
+		})
+
 		v.RegisterValidation("usernameExists", func(fl validator.FieldLevel) bool {
 			row := db.QueryRow("SELECT count(*) as total FROM users WHERE username=?", fl.Field().String())
 			var exists bool
@@ -69,6 +93,16 @@ func NewCustomValidator(db *sqlx.DB) *CustomValidator {
 				fmt.Println("ERROR usernameExists ", err)
 			}
 			return !exists
+		})
+
+		v.RegisterValidation("isValidPaswordKey", func(fl validator.FieldLevel) bool {
+			row := db.QueryRow("SELECT count(*) as total FROM users WHERE password_key=?", fl.Field().String())
+			var exists bool
+			err := row.Scan(&exists)
+			if err != nil {
+				fmt.Println("ERROR isValidPaswordKey ", err)
+			}
+			return exists
 		})
 	}
 
