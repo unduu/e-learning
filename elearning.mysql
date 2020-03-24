@@ -42,6 +42,86 @@ INSERT INTO `answers` VALUES ('johndoe','pretest','[{\"id\":1,\"answer\":[2]},{\
 UNLOCK TABLES;
 
 --
+-- Table structure for table `course_contents`
+--
+
+DROP TABLE IF EXISTS `course_contents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course_contents` (
+  `course_content_id` int(11) NOT NULL AUTO_INCREMENT,
+  `course_id` int(11) NOT NULL DEFAULT '0',
+  `type` varchar(20) NOT NULL DEFAULT '',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `duration` int(11) NOT NULL DEFAULT '0',
+  `content` varchar(255) NOT NULL DEFAULT '',
+  `section_name` varchar(255) NOT NULL DEFAULT '',
+  `section_desc` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`course_content_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_contents`
+--
+
+LOCK TABLES `course_contents` WRITE;
+/*!40000 ALTER TABLE `course_contents` DISABLE KEYS */;
+INSERT INTO `course_contents` VALUES (1,1,'video','Introduction to the User Experience Course',240,'big_buck_bunny.mp4','Section 1','Getting Started'),(2,1,'video','Getting started with your Adobe XD project',480,'big_buck_bunny.mp4','Section 1','Getting Started'),(3,1,'video','Working with type in your XD wireframes',660,'big_buck_bunny.mp4','Section 2','Type, Color and icon introduction'),(4,1,'video','Free icons for your Adobe XD & UX UI projects',900,'big_buck_bunny.mp4','Section 2','Type, Color and icon introduction'),(5,1,'video','New Pages & Artboards in Adobe XD',660,'big_buck_bunny.mp4','Section 2','Type, Color and icon introduction');
+/*!40000 ALTER TABLE `course_contents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `course_participants`
+--
+
+DROP TABLE IF EXISTS `course_participants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course_participants` (
+  `course_id` int(11) NOT NULL,
+  `username` varchar(20) NOT NULL DEFAULT '',
+  `status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_participants`
+--
+
+LOCK TABLES `course_participants` WRITE;
+/*!40000 ALTER TABLE `course_participants` DISABLE KEYS */;
+INSERT INTO `course_participants` VALUES (1,'andi',2),(2,'andi',1),(3,'andi',0),(4,'andi',0),(5,'andi',0),(1,'aubree',0),(2,'aubree',0),(3,'aubree',0),(4,'aubree',0),(5,'aubree',0);
+/*!40000 ALTER TABLE `course_participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `courses`
+--
+
+DROP TABLE IF EXISTS `courses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `courses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `alias` varchar(255) NOT NULL DEFAULT '',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `subtitle` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `courses`
+--
+
+LOCK TABLES `courses` WRITE;
+/*!40000 ALTER TABLE `courses` DISABLE KEYS */;
+INSERT INTO `courses` VALUES (1,'01-user-experience-design','User Experience Design Essentials - Adobe XD UI UX Design','Use XD to get a job in UI Design, User Interface, User Experience design, UX design & Web Design'),(2,'02-supreme-photoshop-training','Supreme Photoshop Training: From Beginner to Expert','Supreme Photoshop Training - Become an expert in Photoshop with no experience or prior knowledge - Anyone can do it'),(3,'03-building-website','Build Websites from Scratch with HTML & CSS','Learn Web Development Essentials and Become a Web Developer From Scratch in this Complete HTML & CSS Beginner\'s Course'),(4,'04-introduction-vue','Introduction and Learn Vue.JS','Vue (pronounced vue, like view) is a progressive framework for building user interfaces'),(5,'05-adobe-ilustrator','Adobe Illustrator CC - Essentials Training Course','Learn Adobe Illustrator CC graphic design, logo design, and more with this in-depth, practical, easy-to-follow course!');
+/*!40000 ALTER TABLE `courses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `questions`
 --
 
@@ -99,7 +179,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('andi','d8578edf8458ce06fbc5bb76a58c5ca4','menthor','andi faizal','6285255753539','andifaizal@example.com','active',1,'640166','','2020-03-21 01:33:22'),('aubree','79d9c4cdc009f586adb12de26eb9503d','menthor','Aubree Craig','62814241343','aubree.craig@example.com','active',1,'916885','','2020-03-21 01:34:02'),('christy','432f45b44c432414d2f97df0e5743818','menthor','Christy Morrison','62814540665','christy.morrison@example.com','active',1,'235815','','2020-03-21 01:33:22'),('gordon','7a034553a5cdf69f99e47814361b9721','menthor','Adrian Gordon','62814540165','adrian.gordon@example.com','active',1,'553116','','2020-03-21 01:33:22'),('hector','76b33441334a9175cc9d405ef1d4e6a4','menthor','Hector Rice','62814241241','hector.rice@example.com','inactive',0,'861603','','2020-03-21 01:33:22'),('johndoe','827ccb0eea8a706c4c34a16891f84e7b','admin','john doe','62814540623','johndoe@gmail.com','active',1,'195174','','2020-03-21 01:33:22'),('natalie','08956bea986142a596e52bab10287fb7','menthor','Natalie Edwards','62814540669','natalie.edwards@example.com','inactive',0,'451075','','2020-03-21 01:33:22'),('silverswan131','36e5371ad91c9d2d09e9d7c0e76055db','menthor','brad gibson','62814540666','brad.gibson@example.com','active',1,'273898','','2020-03-21 01:33:22'),('soham','a0a8416e386c7bf4e5cae1c362106e95','menthor','Soham Lewis','62814540662','soham.lewis@example.com','inactive',0,'210684','','2020-03-21 01:33:22'),('stanley','64202a21204b1bfc334590c028bab2bf','menthor','Jo Stanley','62814540345','jo.stanley@example.com','inactive',0,'394676','','2020-03-21 01:33:22'),('wanda','295ae6bbb074b556aa716b53a8ad9a9f','menthor','Wanda Alexander','62814541345','wanda.alexander@example.com','inactive',0,'301429','','2020-03-21 01:33:22'),('Winifred','a7fd1c347fb59fca780b86c367632b68','menthor','Winifred Ferenc','62814540661','wferenc0@oracle.com','active',1,'997606','','2020-03-21 01:33:22');
+INSERT INTO `users` VALUES ('andi','d28c33c4c66f9c471144193edae81fd2','menthor','andi faizal','6285255753539','andifaizal@example.com','active',1,'640166','','2020-03-21 01:33:22'),('aubree','79d9c4cdc009f586adb12de26eb9503d','menthor','Aubree Craig','62814241343','aubree.craig@example.com','active',1,'916885','','2020-03-21 01:34:02'),('christy','432f45b44c432414d2f97df0e5743818','menthor','Christy Morrison','62814540665','christy.morrison@example.com','active',1,'235815','','2020-03-21 01:33:22'),('gordon','7a034553a5cdf69f99e47814361b9721','menthor','Adrian Gordon','62814540165','adrian.gordon@example.com','active',1,'553116','','2020-03-21 01:33:22'),('hector','76b33441334a9175cc9d405ef1d4e6a4','menthor','Hector Rice','62814241241','hector.rice@example.com','inactive',0,'861603','','2020-03-21 01:33:22'),('johndoe','827ccb0eea8a706c4c34a16891f84e7b','admin','john doe','62814540623','johndoe@gmail.com','active',1,'195174','','2020-03-21 01:33:22'),('natalie','08956bea986142a596e52bab10287fb7','menthor','Natalie Edwards','62814540669','natalie.edwards@example.com','inactive',0,'451075','','2020-03-21 01:33:22'),('silverswan131','36e5371ad91c9d2d09e9d7c0e76055db','menthor','brad gibson','62814540666','brad.gibson@example.com','active',1,'273898','','2020-03-21 01:33:22'),('soham','a0a8416e386c7bf4e5cae1c362106e95','menthor','Soham Lewis','62814540662','soham.lewis@example.com','inactive',0,'210684','','2020-03-21 01:33:22'),('stanley','64202a21204b1bfc334590c028bab2bf','menthor','Jo Stanley','62814540345','jo.stanley@example.com','inactive',0,'394676','','2020-03-21 01:33:22'),('wanda','295ae6bbb074b556aa716b53a8ad9a9f','menthor','Wanda Alexander','62814541345','wanda.alexander@example.com','inactive',0,'301429','','2020-03-21 01:33:22'),('Winifred','a7fd1c347fb59fca780b86c367632b68','menthor','Winifred Ferenc','62814540661','wferenc0@oracle.com','active',1,'997606','','2020-03-21 01:33:22');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -112,4 +192,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-21  8:37:12
+-- Dump completed on 2020-03-24 21:36:47
