@@ -84,7 +84,9 @@ func (a *LearningRepository) GetCourseByAlias(alias string) *model.Course {
 	if err != nil {
 		fmt.Println("Error db GetCourseByAlias->query.Get : ", err)
 	}
-
+	if len(courses) <= 0 {
+		return &model.Course{}
+	}
 	return courses[0]
 }
 

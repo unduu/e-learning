@@ -91,6 +91,13 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 		contentArr = append(contentArr, sectionRes)
 	}
 
+	if len(course.Sections) <= 0 {
+		msg := "Course not found"
+		err := response.Error{"alias", "Enter a valid course"}
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
+
 	// Response
 	msg := "Learning module list"
 	res := ResponseLearningContent{Content: contentArr}
