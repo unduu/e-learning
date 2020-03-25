@@ -42,14 +42,17 @@ func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) 
 	return assesment, totalData
 }
 
-func (a *EvaluationUsecase) StartPostEvaluation(page int, limit int) (model.Assesment, int) {
+func (a *EvaluationUsecase) StartPostEvaluation(username string, page int, limit int) (*model.Assesment, int) {
 	questionIdArr := []string{}
 	answerArr := []model.Answer{}
 
-	assesment := model.Assesment{Status: "active"}
+	assesment := &model.Assesment{Status: "active"}
 	assesment.SetDuration()
 
-	answer := a.repository.GetUserAnswers("johndoe")
+	answer := a.repository.GetUserAnswers(username, "pretest")
+	if answer == nil {
+		return nil, 0
+	}
 
 	err := json.Unmarshal([]byte(answer.Selected), &answerArr)
 	if err != nil {
@@ -78,6 +81,14 @@ func (a *EvaluationUsecase) StartPostEvaluation(page int, limit int) (model.Asse
 	}
 
 	return assesment, totalData
+}
+
+func (a *EvaluationUsecase) IsPrePostExists(username string) bool {
+	pretest := a.repository.GetUserAnswers(username, "pretest")
+	if pretest == nil {
+		return false
+	}
+	return true
 }
 
 func (a *EvaluationUsecase) CheckAnswerResult(answer string) {

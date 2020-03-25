@@ -114,17 +114,18 @@ func (a *EvaluationRepository) GetCorrectAnswerByQuestionID(id int) *model.Corre
 	return answers[0]
 }
 
-func (a *EvaluationRepository) GetUserAnswers(username string) *model.UserAnswerDB {
+func (a *EvaluationRepository) GetUserAnswers(username string, module string) *model.UserAnswerDB {
 	// DB Response struct
 	answers := make([]*model.UserAnswerDB, 0)
 
 	// Data for query
 	queryParams := map[string]interface{}{
 		"username": username,
+		"module":   module,
 	}
 
 	// Compose query
-	query, err := a.conn.PrepareNamed(`SELECT username,answer FROM answers WHERE username = :username`)
+	query, err := a.conn.PrepareNamed(`SELECT username,answer FROM answers WHERE username = :username AND type = :module`)
 	if err != nil {
 		fmt.Println("Error db GetCorrectAnswerByQuestionID->PrepareNamed : ", err)
 	}
@@ -135,6 +136,9 @@ func (a *EvaluationRepository) GetUserAnswers(username string) *model.UserAnswer
 		fmt.Println("Error db GetQuestions->query.Get : ", err)
 	}
 
+	if len(answers) <= 0 {
+		return nil
+	}
 	return answers[0]
 }
 
