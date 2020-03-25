@@ -11,3 +11,9 @@ type RequestEvaluation struct {
 type RequestProcessEvaluationAnswer struct {
 	Answer string `form:"answer" json:"answer" xml:"answer"  binding:"required"`
 }
+
+// Request form quiz answer
+type RequestProcessQuizAnswer struct {
+	Title  string `form:"title" json:"title" xml:"title"  binding:"required"`
+	Answer string `form:"answer" json:"answer" xml:"answer"  binding:"required"`
+}

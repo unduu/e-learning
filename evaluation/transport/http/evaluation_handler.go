@@ -29,7 +29,9 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.GET("test/pre", mw.AuthMiddleware, handler.PreEvaluation)
 	router.POST("test/pre", mw.AuthMiddleware, handler.ProcessEvaluationAnswer)
 	router.GET("test/post", mw.AuthMiddleware, handler.PostEvaluation)
+	router.POST("test/post", mw.AuthMiddleware, handler.ProcessPostAnswer)
 	router.GET("test/quiz", mw.AuthMiddleware, handler.QuizEvaluation)
+	router.POST("test/quiz", mw.AuthMiddleware, handler.ProcessQuizAnswer)
 
 }
 
@@ -103,7 +105,7 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
-// PostEvaluation return pre test question
+// PostEvaluation return post test question
 func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	// Form Data
 	var req RequestEvaluation
@@ -127,8 +129,16 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 		response.RespondErrorJSON(c.Writer, errValidation)
 		return
 	}
+	// User session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
 
-	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(req.Page, req.Limit)
+	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
+	if assesment == nil {
+		msg := "You have to join pre test first"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
 
 	// Pagination
 	totalPage := int(math.Round(float64(totalData) / float64(req.Limit)))
@@ -273,6 +283,83 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 
 	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer)
+
+	msg := "Thank you, We have recieve your answer"
+	res := make([]string, 0)
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// ProcessPostAnswer receive post test answer from user
+func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
+	// Form Data
+	var req RequestProcessEvaluationAnswer
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	// User Logged in session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	exists := e.EvaluationUsecase.IsPrePostExists(loggedIn.Username)
+	if !exists {
+		msg := "You have to join pre test first"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
+	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer)
+
+	msg := "Thank you, We have recieve your answer"
+	res := make([]string, 0)
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// ProcessQuizAnswer receive quiz answer from user
+func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
+	// Form Data
+	var req RequestProcessQuizAnswer
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	// User Logged in session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, req.Title, req.Answer)
 
 	msg := "Thank you, We have recieve your answer"
 	res := make([]string, 0)
