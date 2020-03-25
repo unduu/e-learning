@@ -17,7 +17,7 @@ func NewEvaluationRepository(db *sqlx.DB) *EvaluationRepository {
 	}
 }
 
-func (a *EvaluationRepository) GetQuestions(page int, limit int) ([]*model.Question, int, error) {
+func (a *EvaluationRepository) GetQuestions(module string, page int, limit int) ([]*model.Question, int, error) {
 	offset := (page - 1) * limit
 	questions := make([]*model.Question, 0)
 
@@ -25,15 +25,16 @@ func (a *EvaluationRepository) GetQuestions(page int, limit int) ([]*model.Quest
 		Total int `db:"total"`
 	}
 	queryParams := map[string]interface{}{
+		"module": module,
 		"offset": offset,
 		"limit":  limit,
 	}
-	query, err := a.conn.PrepareNamed(`SELECT id, type, attachment_type, attachment, question, choices FROM questions ORDER BY RAND() LIMIT :offset, :limit `)
+	query, err := a.conn.PrepareNamed(`SELECT id, type, attachment_type, attachment, question, choices FROM questions WHERE module = :module ORDER BY RAND() LIMIT :offset, :limit `)
 	if err != nil {
 		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
 	}
 
-	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions`)
+	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions WHERE module = :module`)
 	if err != nil {
 		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
 	}

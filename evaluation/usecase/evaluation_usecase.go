@@ -18,11 +18,11 @@ func NewEvaluationUsecase(repository evaluation.Repository) *EvaluationUsecase {
 	}
 }
 
-func (a *EvaluationUsecase) StartEvaluation(page int, limit int) (model.Assesment, int) {
+func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
 	assesment.SetDuration()
 
-	questionsList, totalData, err := a.repository.GetQuestions(page, limit)
+	questionsList, totalData, err := a.repository.GetQuestions(module, page, limit)
 
 	if err != nil {
 		fmt.Println("ERROR StartEvaluation : ", err)
