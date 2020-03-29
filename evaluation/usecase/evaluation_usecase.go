@@ -6,6 +6,7 @@ import (
 	"github.com/unduu/e-learning/evaluation"
 	"github.com/unduu/e-learning/evaluation/model"
 	"strconv"
+	"time"
 )
 
 type EvaluationUsecase struct {
@@ -18,6 +19,7 @@ func NewEvaluationUsecase(repository evaluation.Repository) *EvaluationUsecase {
 	}
 }
 
+// StartEvaluation return list of pre test question
 func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
 	assesment.SetDuration()
@@ -42,6 +44,7 @@ func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) 
 	return assesment, totalData
 }
 
+// StartPostEvaluation return list of answered pre test question
 func (a *EvaluationUsecase) StartPostEvaluation(username string, page int, limit int) (*model.Assesment, int) {
 	questionIdArr := []string{}
 	answerArr := []model.Answer{}
@@ -83,14 +86,16 @@ func (a *EvaluationUsecase) StartPostEvaluation(username string, page int, limit
 	return assesment, totalData
 }
 
-func (a *EvaluationUsecase) IsPrePostExists(username string) bool {
-	pretest := a.repository.GetUserAnswers(username, "pretest")
+// IsAnswerExists check if user answer already exists in pre / post test
+func (a *EvaluationUsecase) IsAnswerExists(username string, module string) bool {
+	pretest := a.repository.GetUserAnswers(username, module)
 	if pretest == nil {
 		return false
 	}
 	return true
 }
 
+// CheckAnswerResult compare user test answer with correct answer
 func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
 
 	var grade float64
@@ -134,7 +139,17 @@ func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
 	fmt.Println("Grade ", grade)
 }
 
+// SaveAnswer insert user answer to databases
 func (a *EvaluationUsecase) SaveAnswer(username string, testType string, answer string) {
 
 	a.repository.InsertAnswer(username, testType, answer)
+}
+
+// ArchivedPrePostAnswer reset user pre post test, so user can retry pre post test
+func (a *EvaluationUsecase) ArchivedPrePostAnswer(username string) {
+	t := time.Now()
+	timeStr := t.Format("20060102150405")
+	archivedName := "archived_" + timeStr
+	a.repository.UpdateUserAnswerStatus(username, "pretest", archivedName)
+	a.repository.UpdateUserAnswerStatus(username, "posttest", archivedName)
 }

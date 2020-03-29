@@ -7,5 +7,6 @@ type Repository interface {
 	GetQuestionByIds(ids []string, page int, limit int) ([]*model.Question, int, error)
 	GetCorrectAnswerByQuestionID(id int) *model.CorrectAnswerDB
 	GetUserAnswers(username string, module string) *model.UserAnswerDB
-	InsertAnswer(username, testType, answer string) (affected int64)
+	InsertAnswer(username string, testType string, answer string) (affected int64)
+	UpdateUserAnswerStatus(username string, module string, newStatus string) (affected int64)
 }

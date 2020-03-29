@@ -32,7 +32,8 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.POST("test/post", mw.AuthMiddleware, handler.ProcessPostAnswer)
 	router.GET("test/quiz", mw.AuthMiddleware, handler.QuizEvaluation)
 	router.POST("test/quiz", mw.AuthMiddleware, handler.ProcessQuizAnswer)
-
+	router.POST("test/pre/reset", mw.AuthMiddleware, handler.ResetPrePostStatus)
+	router.POST("test/post/reset", mw.AuthMiddleware, handler.ResetPrePostStatus)
 }
 
 // PreEvaluation return pre test question
@@ -281,6 +282,15 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	// User Logged in session
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
+	// Check if user not join pre test yet
+	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
+	if exists {
+		msg := "You already join pre test"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
+
 	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer)
 
@@ -316,13 +326,23 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	// User Logged in session
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
-	exists := e.EvaluationUsecase.IsPrePostExists(loggedIn.Username)
+	// Check if user not join pre test yet
+	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if !exists {
 		msg := "You have to join pre test first"
 		err := make([]string, 0)
 		response.RespondErrorJSON(c.Writer, err, msg)
 		return
 	}
+	// Check if user already join post test
+	exists = e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
+	if exists {
+		msg := "You already join post test"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
+
 	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer)
 
@@ -362,6 +382,18 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, req.Title, req.Answer)
 
 	msg := "Thank you, We have recieve your answer"
+	res := make([]string, 0)
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// ResetPrePostStatus set current pre post answer status to archived
+func (e *EvaluationHandler) ResetPrePostStatus(c *gin.Context) {
+	// User session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+	e.EvaluationUsecase.ArchivedPrePostAnswer(loggedIn.Username)
+
+	// Response
+	msg := "Your pre post status has been reset"
 	res := make([]string, 0)
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
