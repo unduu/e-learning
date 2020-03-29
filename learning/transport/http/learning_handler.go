@@ -66,10 +66,20 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 func (l *LearningHandler) LearningContent(c *gin.Context) {
 	// Path param
 	alias := c.Params.ByName("alias")
-
+	// Session
+	loggedIn := l.Middleware.GetLoggedInUser(c)
 	// Processing
 	contentArr := []Section{}
 	course := l.LearningUsecase.GetCourseLessons(alias)
+	_, statusCode := course.GetParticipantStatus(loggedIn.Username)
+	// Response cannot access course
+	if statusCode == 0 {
+		msg := "You not allowed to access this course"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
+
 	for _, sectionObj := range course.Sections {
 		lessonResArr := []Lesson{}
 		for _, lessonObj := range sectionObj.Lessons {

@@ -32,6 +32,8 @@ func (a *LearningUsecase) GetCourseList() (results []*model.Course) {
 func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) {
 
 	course = a.repository.GetCourseByAlias(alias)
+	participants := a.repository.GetParticipantByCourse(course.Id)
+	course.AddParticipant(participants)
 	data := a.repository.GetLessonsByCourseId(course.Id)
 	for _, row := range data {
 		lesson := &model.Lesson{
