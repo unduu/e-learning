@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -116,8 +117,18 @@ func (m *Middleware) GetLoggedInUser(c *gin.Context) UserSession {
 }
 
 func (m *Middleware) IsActivated(userinfo UserSession) bool {
-	if userinfo.StatusCode == 0 {
+	/*if userinfo.StatusCode == 0 {
 		return false
 	}
-	return true
+	return true*/
+	row := m.conn.QueryRow("SELECT status FROM users WHERE username=?", userinfo.Username)
+	var status string
+	err := row.Scan(&status)
+	if err != nil {
+		fmt.Println("Middleware error IsActivated  ", err)
+	}
+	if status == "active" {
+		return true
+	}
+	return false
 }
