@@ -43,7 +43,7 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	m.SetLoggedInUserInfo(session, c)
 
 	if !m.IsActivated(session) {
-		response.RespondUnauthorizedJSON(c.Writer, "Please verify your account to access this page")
+		response.RespondUnverifyJSON(c.Writer, "Please verify your account to access this page")
 		c.Abort()
 		return
 	}
