@@ -71,7 +71,7 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 	if exists {
 		msg := "You already join pre test"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	if exists {
 		msg := "You already join post test"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	if assesment == nil {
 		msg := "You have to join pre test first"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 
@@ -310,7 +310,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	if exists {
 		msg := "You already join pre test"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 
@@ -355,7 +355,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	if !exists {
 		msg := "You have to join pre test first"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 	// Check if user already join post test
@@ -363,7 +363,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	if exists {
 		msg := "You already join post test"
 		err := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, err, msg)
+		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
 
