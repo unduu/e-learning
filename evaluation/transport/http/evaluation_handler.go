@@ -63,6 +63,17 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 		response.RespondErrorJSON(c.Writer, errValidation)
 		return
 	}
+	// User Logged in session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	// Check if user not join pre test yet
+	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
+	if exists {
+		msg := "You already join pre test"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
 
 	assesment, totalData := e.EvaluationUsecase.StartEvaluation("prepost", req.Page, req.Limit)
 
@@ -135,6 +146,15 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	}
 	// User session
 	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	// Check if user already join post test
+	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
+	if exists {
+		msg := "You already join post test"
+		err := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, err, msg)
+		return
+	}
 
 	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
 	if assesment == nil {
