@@ -7,4 +7,5 @@ type Repository interface {
 	GetParticipantByCourse(id int) []*model.Participant
 	GetCourseByAlias(alias string) *model.Course
 	GetLessonsByCourseId(id int) []*model.SectionLessons
+	AddCourseParticipant(username string, courseId int, status int) (affected int64)
 }

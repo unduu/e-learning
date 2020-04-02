@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/unduu/e-learning/evaluation"
 	customValidator "github.com/unduu/e-learning/helper/validator"
+	"github.com/unduu/e-learning/learning"
 	"github.com/unduu/e-learning/middleware"
 	"github.com/unduu/e-learning/response"
 	"gopkg.in/go-playground/validator.v9"
@@ -16,13 +17,15 @@ import (
 
 type EvaluationHandler struct {
 	EvaluationUsecase evaluation.Usecase
+	LearningUsecase   learning.Usecase
 	Middleware        *middleware.Middleware
 	Validator         *customValidator.CustomValidator
 }
 
-func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *customValidator.CustomValidator, evaluationUC evaluation.Usecase) {
+func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *customValidator.CustomValidator, evaluationUC evaluation.Usecase, learningUC learning.Usecase) {
 	handler := &EvaluationHandler{
 		EvaluationUsecase: evaluationUC,
+		LearningUsecase:   learningUC,
 		Middleware:        mw,
 		Validator:         v,
 	}
@@ -293,6 +296,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 
 	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer)
+	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
 
 	msg := "Thank you, We have recieve your answer"
 	res := make([]string, 0)

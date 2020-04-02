@@ -60,3 +60,12 @@ func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) 
 
 	return course
 }
+
+// SetDefaultCourse set default course for new registered user
+func (a *LearningUsecase) SetDefaultCourse(username string) {
+	a.repository.AddCourseParticipant(username, 1, 1)
+	a.repository.AddCourseParticipant(username, 2, 0)
+	a.repository.AddCourseParticipant(username, 3, 0)
+	a.repository.AddCourseParticipant(username, 4, 0)
+	a.repository.AddCourseParticipant(username, 5, 0)
+}

@@ -45,11 +45,11 @@ func main() {
 		_authUsecase := _authUsecase.NewAuthUsecase(authRepo)
 		_authHandler.NewHttpAuthHandler(s, m, validator, _authUsecase)
 
-		_evaluationUsecase := _evaluationUsecase.NewEvaluationUsecase(evalauationRepo)
-		_evaluationHandler.NewHttpAuthHandler(s, m, validator, _evaluationUsecase)
-
 		_learningUsecase := _learningUsecase.NewLearningUsecase(learningRepo)
 		_learningHandler.NewHttpLearningHandler(s, m, validator, _learningUsecase)
+
+		_evaluationUsecase := _evaluationUsecase.NewEvaluationUsecase(evalauationRepo)
+		_evaluationHandler.NewHttpAuthHandler(s, m, validator, _evaluationUsecase, _learningUsecase)
 	}
 
 	config := cors.DefaultConfig()

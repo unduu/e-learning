@@ -113,3 +113,32 @@ func (a *LearningRepository) GetLessonsByCourseId(id int) []*model.SectionLesson
 
 	return sectionLessons
 }
+
+func (a *LearningRepository) AddCourseParticipant(username string, courseId int, status int) (affected int64) {
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"username":  username,
+		"course_id": courseId,
+		"status":    status,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`INSERT INTO course_participants SET username = :username, course_id = :course_id, status = :status`)
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->RowsAffected : ", err)
+	}
+
+	return affected
+}
