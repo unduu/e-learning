@@ -30,3 +30,8 @@ type RequestResetPassword struct {
 	PasswordKey string `form:"password_key" json:"password_key" xml:"password_key"  binding:"required,isValidPaswordKey"`
 	PasswordNew string `form:"new_password" json:"new_password" xml:"new_password"  binding:"required,min=8"`
 }
+
+// Request resend verification code
+type RequestResendVerifCode struct {
+	Phone string `form:"phone" json:"phone" xml:"phone"  binding:"required,isphonenumber,isValidPhone"`
+}

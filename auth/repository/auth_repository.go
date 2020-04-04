@@ -36,6 +36,26 @@ func (a *AuthRepository) GetByUsernamePassword(username string, password string)
 
 	return &menthor, err
 }
+
+func (a *AuthRepository) GetByPhone(phone string) (*model.User, error) {
+	menthor := model.User{}
+
+	queryParams := map[string]interface{}{
+		"phone": phone,
+	}
+	query, err := a.conn.PrepareNamed(`SELECT username,role,status,status_code,verification_code FROM users WHERE phone = :phone`)
+	if err != nil {
+		fmt.Println("Error db GetByUsernamePassword->PrepareNamed : ", err)
+	}
+
+	err = query.Get(&menthor, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetByUsernamePassword->query.Get : ", err)
+	}
+
+	return &menthor, err
+}
+
 func (a *AuthRepository) InsertNewUser(user model.User, verifCode string) (affected int64) {
 	// Data for query
 	queryParams := map[string]interface{}{

@@ -128,6 +128,16 @@ func (a *AuthUsecase) SendVerificationCode(code string, phone string) {
 	}
 }
 
+func (a *AuthUsecase) ResendVerificationCode(phone string, username string) bool {
+	user, _ := a.repository.GetByPhone(phone)
+
+	if user.Username == username {
+		a.SendVerificationCode(user.VerificationCode, user.Phone)
+		return true
+	}
+	return false
+}
+
 // EncodeToString return auto generated 6 digit number
 func EncodeToString(max int) string {
 	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}

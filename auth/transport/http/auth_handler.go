@@ -26,6 +26,7 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.GET("logout", mw.AuthMiddleware, handler.Logout)
 	router.POST("register", handler.Register)
 	router.POST("register/verification", mw.TokenCheckMiddleware, handler.Verify)
+	router.POST("register/verification/resend", mw.TokenCheckMiddleware, handler.ResendVerifCode)
 	router.POST("password/forgot", handler.ForgotPassword)
 	router.POST("password/reset", handler.ResetPassword)
 }
@@ -179,6 +180,41 @@ func (a *AuthHandler) ResetPassword(c *gin.Context) {
 
 	// Response
 	msg := "Your password has been reset successfully"
+	res := make([]string, 0)
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// ResendVerifCode resend verification code to user phone
+func (a *AuthHandler) ResendVerifCode(c *gin.Context) {
+	// Request validation
+	var req RequestResendVerifCode
+	err := c.ShouldBind(&req)
+	if err != nil {
+		var errValidation []response.Error
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(a.Validator.Translation)
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	// Session
+	loggedIn := a.Middleware.GetLoggedInUser(c)
+
+	// Processing
+	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
+	ok := a.AuthUsecase.ResendVerificationCode(phoneNormalize, loggedIn.Username)
+
+	// Response Error
+	if !ok {
+		errResponse := make([]string, 0)
+		response.RespondErrorJSON(c.Writer, errResponse, "You have entered wrong phone number")
+		return
+	}
+
+	// Response Success
+	msg := "We have sent a verification code to your phone number"
 	res := make([]string, 0)
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
