@@ -8,4 +8,5 @@ type Usecase interface {
 	Verify(username, code string) (affected int64)
 	ForgotPassword(phone string) (affected int64, passKey string)
 	ResetPassword(password string, passkey string) (affected int64)
+	SendVerificationCode(code string, phone string)
 }
