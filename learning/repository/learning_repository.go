@@ -25,7 +25,7 @@ func (a *LearningRepository) GetCourses() []*model.Course {
 	queryParams := map[string]interface{}{}
 
 	// Compose query
-	query, err := a.conn.PrepareNamed(`SELECT id,alias,title,subtitle FROM courses`)
+	query, err := a.conn.PrepareNamed(`SELECT id,alias,title,subtitle,thumbnail FROM courses`)
 	if err != nil {
 		fmt.Println("Error db GetCourses->PrepareNamed : ", err)
 	}
@@ -74,7 +74,7 @@ func (a *LearningRepository) GetCourseByAlias(alias string) *model.Course {
 	}
 
 	// Compose query
-	query, err := a.conn.PrepareNamed(`SELECT id,alias,title,subtitle FROM courses WHERE alias = :alias LIMIT 1`)
+	query, err := a.conn.PrepareNamed(`SELECT id,alias,title,subtitle,thumbnail FROM courses WHERE alias = :alias LIMIT 1`)
 	if err != nil {
 		fmt.Println("Error db GetCourseByAlias->PrepareNamed : ", err)
 	}

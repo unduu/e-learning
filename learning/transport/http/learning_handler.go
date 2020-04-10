@@ -51,6 +51,7 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 			courseDuration.Format(),
 			status,
 			statusCode,
+			course.Thumbnail,
 		}
 		moduleArr = append(moduleArr, c)
 	}

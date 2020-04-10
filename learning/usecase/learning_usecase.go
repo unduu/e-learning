@@ -20,6 +20,7 @@ func (a *LearningUsecase) GetCourseList() (results []*model.Course) {
 	courseArr := a.repository.GetCourses()
 	for _, course := range courseArr {
 		participants := a.repository.GetParticipantByCourse(course.Id)
+		// Get detail total lessons & hours
 		course := a.GetCourseLessons(course.Alias)
 		course.AddParticipant(participants)
 		results = append(results, course)

@@ -6,6 +6,7 @@ type Course struct {
 	Subtitle     string
 	Alias        string
 	TotalLesson  int
+	Thumbnail    string
 	Participants []*Participant
 	Sections     []*Section
 }

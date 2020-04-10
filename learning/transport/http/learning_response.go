@@ -8,6 +8,7 @@ type Module struct {
 	TotalHours  string `json:"total_hours"`
 	Status      string `json:"status"`
 	StatusCode  int    `json:"status_code"`
+	Thumbnail   string `json:"thumbnail"`
 }
 
 type ResponseModuleList struct {
