@@ -11,6 +11,17 @@ type UserAnswerDB struct {
 }
 
 type Answer struct {
-	Id       int   `json:"id" db:"id"`
-	Selected []int `json:"answer" db:"answer"`
+	Id           int   `json:"id" db:"id"`
+	Selected     []int `json:"answer" db:"answer"`
+	TotalAnswer  int
+	TotalWrong   int
+	TotalCorrect int
+	Grade        float64
+}
+
+func (a *Answer) IsPass() bool {
+	if a.Grade >= 100 {
+		return true
+	}
+	return false
 }

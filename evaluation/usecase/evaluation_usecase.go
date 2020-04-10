@@ -87,21 +87,21 @@ func (a *EvaluationUsecase) StartPostEvaluation(username string, page int, limit
 }
 
 // IsAnswerExists check if user answer already exists in pre / post test
-func (a *EvaluationUsecase) IsAnswerExists(username string, module string) bool {
-	pretest := a.repository.GetUserAnswers(username, module)
-	if pretest == nil {
-		return false
+func (a *EvaluationUsecase) IsAnswerExists(username string, module string) (isExist bool, answer *model.UserAnswerDB) {
+	answer = a.repository.GetUserAnswers(username, module)
+	if answer == nil {
+		return false, nil
 	}
-	return true
+	return true, answer
 }
 
 // CheckAnswerResult compare user test answer with correct answer
-func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
+func (a *EvaluationUsecase) CheckAnswerResult(answer string) *model.Answer {
 
-	var grade float64
 	var totalRightAnswer int
 	var totalWrongAnswer int
 	var totalQuestions int
+	var grade float64
 
 	answerArr := []model.Answer{}
 
@@ -133,10 +133,12 @@ func (a *EvaluationUsecase) CheckAnswerResult(answer string) {
 		grade = float64(totalRightAnswer) / float64(totalQuestions) * 100
 	}
 
-	fmt.Println("Total Question ", totalQuestions)
-	fmt.Println("Total Right Answer ", totalRightAnswer)
-	fmt.Println("Total Wrong Answer ", totalWrongAnswer)
-	fmt.Println("Grade ", grade)
+	return &model.Answer{
+		TotalAnswer:  totalQuestions,
+		TotalWrong:   totalWrongAnswer,
+		TotalCorrect: totalRightAnswer,
+		Grade:        grade,
+	}
 }
 
 // SaveAnswer insert user answer to databases
@@ -152,4 +154,11 @@ func (a *EvaluationUsecase) ArchivedPrePostAnswer(username string) {
 	archivedName := "archived_" + timeStr
 	a.repository.UpdateUserAnswerStatus(username, "pretest", archivedName)
 	a.repository.UpdateUserAnswerStatus(username, "posttest", archivedName)
+}
+
+func (a *EvaluationUsecase) ArchivedQuizAnswer(username string, quizName string) {
+	t := time.Now()
+	timeStr := t.Format("20060102150405")
+	archivedName := "archived_" + timeStr
+	a.repository.UpdateUserAnswerStatus(username, quizName, archivedName)
 }

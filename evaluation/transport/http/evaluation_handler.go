@@ -67,7 +67,7 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
 	// Check if user not join pre test yet
-	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
+	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
 		msg := "You already join pre test"
 		err := make([]string, 0)
@@ -148,7 +148,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
 	// Check if user already join post test
-	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
+	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
 		msg := "You already join post test"
 		err := make([]string, 0)
@@ -233,6 +233,21 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 		return
 	}
 
+	// User session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	// Check if user already pass this quiz
+	exists, answer := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, req.Title)
+	if exists {
+		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
+		if answerObj.IsPass() {
+			msg := "You already pass this quiz"
+			err := make([]string, 0)
+			response.RespondSuccessJSON(c.Writer, err, msg)
+			return
+		}
+	}
+
 	assesment, totalData := e.EvaluationUsecase.StartEvaluation(req.Title, req.Page, req.Limit)
 
 	// Pagination
@@ -306,7 +321,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
 	// Check if user not join pre test yet
-	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
+	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
 		msg := "You already join pre test"
 		err := make([]string, 0)
@@ -351,7 +366,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
 	// Check if user not join pre test yet
-	exists := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
+	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if !exists {
 		msg := "You have to join pre test first"
 		err := make([]string, 0)
@@ -359,7 +374,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 		return
 	}
 	// Check if user already join post test
-	exists = e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
+	exists, _ = e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
 		msg := "You already join post test"
 		err := make([]string, 0)
@@ -401,8 +416,18 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 	}
 	// User Logged in session
 	loggedIn := e.Middleware.GetLoggedInUser(c)
-
-	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	// Check if user already pass this quiz
+	exists, answer := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, req.Title)
+	if exists {
+		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
+		if answerObj.IsPass() {
+			msg := "You already pass this quiz"
+			err := make([]string, 0)
+			response.RespondSuccessJSON(c.Writer, err, msg)
+			return
+		}
+	}
+	e.EvaluationUsecase.ArchivedQuizAnswer(loggedIn.Username, req.Title)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, req.Title, req.Answer)
 
 	msg := "Thank you, We have recieve your answer"
