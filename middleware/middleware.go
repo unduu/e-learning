@@ -40,9 +40,17 @@ func (m *Middleware) CheckValidate(err error, c *gin.Context) bool {
 }
 
 func (m *Middleware) AuthMiddleware(c *gin.Context) {
+	// Validate token
 	session := m.ValidateToken(c)
+	if session.Username == "" {
+		c.Abort()
+		return
+	}
+
+	// Set logged user info
 	m.SetLoggedInUserInfo(session, c)
 
+	// Validate user grant access
 	if !m.IsActivated(session) {
 		response.RespondUnverifyJSON(c.Writer, "Please verify your account to access this page")
 		c.Abort()
@@ -94,14 +102,14 @@ func (m *Middleware) ValidateToken(c *gin.Context) UserSession {
 	if err != nil {
 		response.RespondUnauthorizedJSON(c.Writer, "Malformed authentication token")
 		c.Abort()
-		return session
+		return UserSession{}
 	}
 
 	// Token is invalid, maybe not signed on this server
 	if !token.Valid {
 		response.RespondUnauthorizedJSON(c.Writer, "Token is not valid.")
 		c.Abort()
-		return session
+		return UserSession{}
 	}
 
 	return session
