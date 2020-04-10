@@ -142,3 +142,29 @@ func (a *LearningRepository) AddCourseParticipant(username string, courseId int,
 
 	return affected
 }
+
+func (a *LearningRepository) DeleteUserFromAllCourse(username string) (affected int64) {
+	// Data for query
+	queryParams := map[string]interface{}{
+		"username": username,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`DELETE FROM course_participants WHERE username = :username`)
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db AddCourseParticipant->RowsAffected : ", err)
+	}
+
+	return affected
+}

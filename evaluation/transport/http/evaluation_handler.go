@@ -441,6 +441,8 @@ func (e *EvaluationHandler) ResetPrePostStatus(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 	e.EvaluationUsecase.ArchivedPrePostAnswer(loggedIn.Username)
 
+	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
+
 	// Response
 	msg := "Your pre post status has been reset"
 	res := make([]string, 0)
