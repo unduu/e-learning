@@ -45,7 +45,7 @@ func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) 
 			Title:    row.Title,
 			Duration: row.Duration,
 			Video:    row.Video,
-			Progress: 1,
+			Progress: 0,
 		}
 
 		currSection := course.GetSection(row.Name)
@@ -77,7 +77,7 @@ func (a *LearningUsecase) SetDefaultCourse(username string) {
 }
 
 func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string) {
-	pass := true
+	pass := false
 	// Get course by quiz name
 	course := a.repository.GetCourseByQuiz(quiz)
 	// Get lesson from quiz
@@ -88,18 +88,10 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 			Title:    row.Title,
 			Duration: row.Duration,
 			Video:    row.Video,
-			Progress: 1,
 		}
-
-		if lesson.IsQuiz() {
-			exist, answer := a.evaluationUC.IsAnswerExists(username, lesson.Title)
-			if exist {
-				if answer.Grade < 100 {
-					pass = false
-				}
-			} else {
-				pass = false
-			}
+		lesson = a.SetLessonProgress(username, lesson)
+		if lesson.Progress == 1 {
+			pass = true
 		}
 	}
 	if pass {
@@ -108,4 +100,19 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 		// Open next course
 		a.repository.UpdateParticipantStatus(username, course.GetNextCourseId(), course.GetStatusCode("open"))
 	}
+}
+
+func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesson) *model.Lesson {
+	if lesson.IsQuiz() {
+		lesson.Progress = 1
+		exist, answer := a.evaluationUC.IsAnswerExists(username, lesson.Title)
+		if exist {
+			if answer.Grade < 100 {
+				lesson.Progress = 0
+			}
+		} else {
+			lesson.Progress = 0
+		}
+	}
+	return lesson
 }

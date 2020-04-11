@@ -7,4 +7,5 @@ type Usecase interface {
 	GetCourseLessons(alias string) (course *model.Course)
 	SetDefaultCourse(username string)
 	UpdateUserCourseProgress(username string, quiz string)
+	SetLessonProgress(username string, lesson *model.Lesson) *model.Lesson
 }

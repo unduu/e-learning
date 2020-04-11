@@ -86,6 +86,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 		for _, lessonObj := range sectionObj.Lessons {
 			// Formatting time duration
 			courseDuration := model.CourseDuration{Duration: lessonObj.Duration}
+			l.LearningUsecase.SetLessonProgress(loggedIn.Username, lessonObj)
 			lessonRes := Lesson{
 				Type:     lessonObj.Type,
 				Title:    lessonObj.Title,
