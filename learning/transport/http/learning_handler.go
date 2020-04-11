@@ -91,6 +91,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 				Title:    lessonObj.Title,
 				Duration: courseDuration.Minute(),
 				Video:    lessonObj.Video,
+				Progress: lessonObj.Progress,
 			}
 			lessonResArr = append(lessonResArr, lessonRes)
 		}

@@ -20,6 +20,7 @@ type Lesson struct {
 	Title    string `json:"title"`
 	Duration string `json:"duration"`
 	Video    string `json:"video"`
+	Progress int    `json:"progress"`
 }
 
 type Section struct {

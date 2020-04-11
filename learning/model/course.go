@@ -1,5 +1,7 @@
 package model
 
+import "strings"
+
 type Course struct {
 	Id           int
 	Title        string
@@ -63,4 +65,20 @@ func (c *Course) GetTotalLesson() (total int) {
 		total = len(section.Lessons)
 	}
 	return total
+}
+func (c *Course) GetStatusCode(status string) (code int) {
+	status = strings.ToLower(status)
+	switch status {
+	case "locked":
+		code = 0
+	case "open":
+		code = 1
+	case "completed":
+		code = 2
+	}
+	return code
+}
+
+func (c *Course) GetNextCourseId() (id int) {
+	return c.Id + 1
 }

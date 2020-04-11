@@ -6,5 +6,5 @@ type Usecase interface {
 	GetCourseList() (courseArr []*model.Course)
 	GetCourseLessons(alias string) (course *model.Course)
 	SetDefaultCourse(username string)
-	//UnlockUserNextCourse(username string)
+	UpdateUserCourseProgress(username string, quiz string)
 }

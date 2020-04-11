@@ -90,6 +90,34 @@ func (a *LearningRepository) GetCourseByAlias(alias string) *model.Course {
 	return courses[0]
 }
 
+// GetCourseByQuiz return course by quiz name
+func (a *LearningRepository) GetCourseByQuiz(quiz string) *model.Course {
+	// DB Response struct
+	courses := make([]*model.Course, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"title": quiz,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT courses.id,courses.alias,courses.title,subtitle,thumbnail FROM courses JOIN course_contents ON courses.id = course_id WHERE course_contents.title = :title`)
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&courses, queryParams)
+
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->query.Get : ", err)
+	}
+	if len(courses) <= 0 {
+		return &model.Course{}
+	}
+	return courses[0]
+}
+
 func (a *LearningRepository) GetLessonsByCourseId(id int) []*model.SectionLessons {
 	// DB Response struct
 	sectionLessons := make([]*model.SectionLessons, 0)
@@ -164,6 +192,34 @@ func (a *LearningRepository) DeleteUserFromAllCourse(username string) (affected 
 	affected, err = result.RowsAffected()
 	if err != nil {
 		fmt.Println("Error db AddCourseParticipant->RowsAffected : ", err)
+	}
+
+	return affected
+}
+
+func (a *LearningRepository) UpdateParticipantStatus(username string, id int, newStatus int) (affected int64) {
+	// Data for query
+	queryParams := map[string]interface{}{
+		"username":  username,
+		"course_id": id,
+		"status":    newStatus,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`UPDATE course_participants SET status = :status WHERE username = :username AND course_id = :course_id`)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->query.Get : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
 	}
 
 	return affected

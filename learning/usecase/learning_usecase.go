@@ -1,17 +1,21 @@
 package usecase
 
 import (
+	"fmt"
+	"github.com/unduu/e-learning/evaluation"
 	"github.com/unduu/e-learning/learning"
 	"github.com/unduu/e-learning/learning/model"
 )
 
 type LearningUsecase struct {
-	repository learning.Repository
+	repository   learning.Repository
+	evaluationUC evaluation.Usecase
 }
 
-func NewLearningUsecase(repository learning.Repository) *LearningUsecase {
+func NewLearningUsecase(repository learning.Repository, evaluationUC evaluation.Usecase) *LearningUsecase {
 	return &LearningUsecase{
-		repository: repository,
+		repository:   repository,
+		evaluationUC: evaluationUC,
 	}
 }
 
@@ -42,6 +46,7 @@ func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) 
 			Title:    row.Title,
 			Duration: row.Duration,
 			Video:    row.Video,
+			Progress: 1,
 		}
 
 		currSection := course.GetSection(row.Name)
@@ -70,4 +75,39 @@ func (a *LearningUsecase) SetDefaultCourse(username string) {
 	a.repository.AddCourseParticipant(username, 3, 0)
 	a.repository.AddCourseParticipant(username, 4, 0)
 	a.repository.AddCourseParticipant(username, 5, 0)
+}
+
+func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string) {
+	pass := true
+	// Get course by quiz name
+	course := a.repository.GetCourseByQuiz(quiz)
+	// Get lesson from quiz
+	lessons := a.repository.GetLessonsByCourseId(course.Id)
+	for _, row := range lessons {
+		lesson := &model.Lesson{
+			Type:     row.Type,
+			Title:    row.Title,
+			Duration: row.Duration,
+			Video:    row.Video,
+			Progress: 1,
+		}
+
+		if lesson.IsQuiz() {
+			exist, answer := a.evaluationUC.IsAnswerExists(username, lesson.Title)
+			if exist {
+				if answer.Grade < 100 {
+					pass = false
+				}
+			} else {
+				pass = false
+			}
+			fmt.Println("PASS ", pass)
+		}
+	}
+	if pass {
+		// Mark current course as finish
+		a.repository.UpdateParticipantStatus(username, course.Id, course.GetStatusCode("completed"))
+		// Open next course
+		a.repository.UpdateParticipantStatus(username, course.GetNextCourseId(), course.GetStatusCode("open"))
+	}
 }
