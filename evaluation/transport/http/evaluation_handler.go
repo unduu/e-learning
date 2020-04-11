@@ -329,8 +329,8 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 		return
 	}
 
-	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
-	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer)
+	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer, answerObj.Grade)
 	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
 
 	msg := "Thank you, We have recieve your answer"
@@ -382,8 +382,8 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 		return
 	}
 
-	e.EvaluationUsecase.CheckAnswerResult(req.Answer)
-	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer)
+	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer, answerObj.Grade)
 
 	msg := "Thank you, We have recieve your answer"
 	res := make([]string, 0)
@@ -427,8 +427,17 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 			return
 		}
 	}
+
+	// Check quiz result
+	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
+
 	e.EvaluationUsecase.ArchivedQuizAnswer(loggedIn.Username, req.Title)
-	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, req.Title, req.Answer)
+	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, req.Title, req.Answer, answerObj.Grade)
+
+	// User pass the quiz
+	if answerObj.IsPass() {
+		e.LearningUsecase.UpdateUserCourseProgress(loggedIn.Username, req.Title)
+	}
 
 	msg := "Thank you, We have recieve your answer"
 	res := make([]string, 0)

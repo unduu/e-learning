@@ -6,8 +6,9 @@ type CorrectAnswerDB struct {
 }
 
 type UserAnswerDB struct {
-	Username string `db:"username"`
-	Selected string `db:"answer"`
+	Username string  `db:"username"`
+	Selected string  `db:"answer"`
+	Grade    float64 `db:"grade"`
 }
 
 type Answer struct {

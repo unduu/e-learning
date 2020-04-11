@@ -130,7 +130,7 @@ func (a *EvaluationRepository) GetUserAnswers(username string, module string) *m
 	}
 
 	// Compose query
-	query, err := a.conn.PrepareNamed(`SELECT username,answer FROM answers WHERE username = :username AND type = :module AND status = :status`)
+	query, err := a.conn.PrepareNamed(`SELECT username,answer,grade FROM answers WHERE username = :username AND type = :module AND status = :status`)
 	if err != nil {
 		fmt.Println("Error db GetCorrectAnswerByQuestionID->PrepareNamed : ", err)
 	}
@@ -148,17 +148,18 @@ func (a *EvaluationRepository) GetUserAnswers(username string, module string) *m
 }
 
 // InsertAnswer persis to database
-func (a *EvaluationRepository) InsertAnswer(username string, testType string, answer string) (affected int64) {
+func (a *EvaluationRepository) InsertAnswer(username string, testType string, answer string, grade float64) (affected int64) {
 
 	// Data for query
 	queryParams := map[string]interface{}{
 		"username": username,
 		"type":     testType,
 		"answer":   answer,
+		"grade":    grade,
 	}
 
 	// Compose query
-	query, err := a.conn.PrepareNamed(`INSERT INTO answers SET username = :username, type = :type, answer = :answer, updated = CURRENT_TIMESTAMP ON DUPLICATE KEY UPDATE updated = CURRENT_TIMESTAMP`)
+	query, err := a.conn.PrepareNamed(`INSERT INTO answers SET username = :username, type = :type, answer = :answer, grade = :grade, updated = CURRENT_TIMESTAMP ON DUPLICATE KEY UPDATE updated = CURRENT_TIMESTAMP`)
 	if err != nil {
 		fmt.Println("Error db InsertAnswer->PrepareNamed : ", err)
 	}

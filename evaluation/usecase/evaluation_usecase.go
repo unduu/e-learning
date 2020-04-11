@@ -142,9 +142,8 @@ func (a *EvaluationUsecase) CheckAnswerResult(answer string) *model.Answer {
 }
 
 // SaveAnswer insert user answer to databases
-func (a *EvaluationUsecase) SaveAnswer(username string, testType string, answer string) {
-
-	a.repository.InsertAnswer(username, testType, answer)
+func (a *EvaluationUsecase) SaveAnswer(username string, testType string, answer string, grade float64) {
+	a.repository.InsertAnswer(username, testType, answer, grade)
 }
 
 // ArchivedPrePostAnswer reset user pre post test, so user can retry pre post test
