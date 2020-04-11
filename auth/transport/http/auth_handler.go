@@ -127,7 +127,7 @@ func (a *AuthHandler) Verify(c *gin.Context) {
 		return
 	}
 	msg := "Your account is activated"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
@@ -180,7 +180,7 @@ func (a *AuthHandler) ResetPassword(c *gin.Context) {
 
 	// Response
 	msg := "Your password has been reset successfully"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
@@ -215,13 +215,13 @@ func (a *AuthHandler) ResendVerifCode(c *gin.Context) {
 
 	// Response Success
 	msg := "We have sent a verification code to your phone number"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
 // Logout remove user access token
 func (a *AuthHandler) Logout(c *gin.Context) {
 	msg := "You have successfully logged out"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

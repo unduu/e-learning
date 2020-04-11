@@ -149,13 +149,13 @@ func (a *EvaluationRepository) GetUserAnswers(username string, module string) *m
 
 // InsertAnswer persis to database
 func (a *EvaluationRepository) InsertAnswer(username string, testType string, answer string, grade float64) (affected int64) {
-
+	gradeStr := fmt.Sprintf("%.1f", grade)
 	// Data for query
 	queryParams := map[string]interface{}{
 		"username": username,
 		"type":     testType,
 		"answer":   answer,
-		"grade":    grade,
+		"grade":    gradeStr,
 	}
 
 	// Compose query

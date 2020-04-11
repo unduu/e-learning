@@ -29,3 +29,7 @@ type PaginationResponse struct {
 	PreviousUrl string `json:"prev_page_url"`
 	NextUrl     string `json:"next_page_url"`
 }
+
+type ProcessPostAnswerResponse struct {
+	Grade string `json:"grade"`
+}

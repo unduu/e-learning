@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/unduu/e-learning/evaluation"
 	customValidator "github.com/unduu/e-learning/helper/validator"
 	"github.com/unduu/e-learning/learning"
@@ -36,7 +37,7 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.GET("test/quiz", mw.AuthMiddleware, handler.QuizEvaluation)
 	router.POST("test/quiz", mw.AuthMiddleware, handler.ProcessQuizAnswer)
 	router.POST("test/pre/reset", mw.AuthMiddleware, handler.ResetPrePostStatus)
-	router.POST("test/post/reset", mw.AuthMiddleware, handler.ResetPrePostStatus)
+	router.POST("test/post/reset", mw.AuthMiddleware, handler.ResetPostStatus)
 }
 
 // PreEvaluation return pre test question
@@ -70,7 +71,7 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
 		msg := "You already join pre test"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -151,7 +152,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
 		msg := "You already join post test"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -159,7 +160,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
 	if assesment == nil {
 		msg := "You have to join pre test first"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -242,7 +243,7 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
 		if answerObj.IsPass() {
 			msg := "You already pass this quiz"
-			err := make([]string, 0)
+			err := struct{}{}
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
 		}
@@ -324,7 +325,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
 		msg := "You already join pre test"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -334,7 +335,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
 
 	msg := "Thank you, We have recieve your answer"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
@@ -369,7 +370,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if !exists {
 		msg := "You have to join pre test first"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -377,7 +378,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	exists, _ = e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
 		msg := "You already join post test"
-		err := make([]string, 0)
+		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
 	}
@@ -385,8 +386,9 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer, answerObj.Grade)
 
-	msg := "Thank you, We have recieve your answer"
-	res := make([]string, 0)
+	grade := fmt.Sprintf("%.1f", answerObj.Grade)
+	msg := "Your submission grade " + grade + "%"
+	res := ProcessPostAnswerResponse{Grade: grade}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
@@ -422,7 +424,7 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
 		if answerObj.IsPass() {
 			msg := "You already pass this quiz"
-			err := make([]string, 0)
+			err := struct{}{}
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
 		}
@@ -440,7 +442,7 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 	}
 
 	msg := "Thank you, We have recieve your answer"
-	res := make([]string, 0)
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
@@ -454,6 +456,18 @@ func (e *EvaluationHandler) ResetPrePostStatus(c *gin.Context) {
 
 	// Response
 	msg := "Your pre post status has been reset"
-	res := make([]string, 0)
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// ResetPostStatus set current post answer status to archived
+func (e *EvaluationHandler) ResetPostStatus(c *gin.Context) {
+	// User session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+	e.EvaluationUsecase.ArchivedPostAnswer(loggedIn.Username)
+
+	// Response
+	msg := "Your post test status has been reset"
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

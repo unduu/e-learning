@@ -155,6 +155,14 @@ func (a *EvaluationUsecase) ArchivedPrePostAnswer(username string) {
 	a.repository.UpdateUserAnswerStatus(username, "posttest", archivedName)
 }
 
+// ArchivedPrePostAnswer reset user pre post test, so user can retry pre post test
+func (a *EvaluationUsecase) ArchivedPostAnswer(username string) {
+	t := time.Now()
+	timeStr := t.Format("20060102150405")
+	archivedName := "archived_" + timeStr
+	a.repository.UpdateUserAnswerStatus(username, "posttest", archivedName)
+}
+
 func (a *EvaluationUsecase) ArchivedQuizAnswer(username string, quizName string) {
 	t := time.Now()
 	timeStr := t.Format("20060102150405")

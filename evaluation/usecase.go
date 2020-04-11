@@ -9,5 +9,6 @@ type Usecase interface {
 	CheckAnswerResult(answer string) *model.Answer
 	SaveAnswer(username string, testType string, answer string, grade float64)
 	ArchivedPrePostAnswer(username string)
+	ArchivedPostAnswer(username string)
 	ArchivedQuizAnswer(username string, quizName string)
 }
