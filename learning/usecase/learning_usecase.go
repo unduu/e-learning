@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/unduu/e-learning/evaluation"
 	"github.com/unduu/e-learning/learning"
 	"github.com/unduu/e-learning/learning/model"
@@ -101,7 +100,6 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 			} else {
 				pass = false
 			}
-			fmt.Println("PASS ", pass)
 		}
 	}
 	if pass {
