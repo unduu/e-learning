@@ -104,15 +104,17 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 
 func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesson) *model.Lesson {
 	if lesson.IsQuiz() {
-		lesson.Progress = 1
+		lesson.Progress = 0
 		exist, answer := a.evaluationUC.IsAnswerExists(username, lesson.Title)
-		if exist {
-			if answer.Grade < 100 {
-				lesson.Progress = 0
-			}
-		} else {
-			lesson.Progress = 0
+		if !exist {
+			return lesson
 		}
+
+		lesson.Progress = 1
+		if answer.Grade == 100 {
+			lesson.Progress = 2
+		}
+
 	}
 	return lesson
 }

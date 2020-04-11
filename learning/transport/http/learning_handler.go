@@ -88,11 +88,12 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 			courseDuration := model.CourseDuration{Duration: lessonObj.Duration}
 			l.LearningUsecase.SetLessonProgress(loggedIn.Username, lessonObj)
 			lessonRes := Lesson{
-				Type:     lessonObj.Type,
-				Title:    lessonObj.Title,
-				Duration: courseDuration.Minute(),
-				Video:    lessonObj.Video,
-				Progress: lessonObj.Progress,
+				Type:         lessonObj.Type,
+				Title:        lessonObj.Title,
+				Duration:     courseDuration.Minute(),
+				Video:        lessonObj.Video,
+				Progress:     lessonObj.GetProgressName(),
+				ProgressCode: lessonObj.Progress,
 			}
 			lessonResArr = append(lessonResArr, lessonRes)
 		}

@@ -16,11 +16,12 @@ type ResponseModuleList struct {
 }
 
 type Lesson struct {
-	Type     string `json:"type"`
-	Title    string `json:"title"`
-	Duration string `json:"duration"`
-	Video    string `json:"video"`
-	Progress int    `json:"progress"`
+	Type         string `json:"type"`
+	Title        string `json:"title"`
+	Duration     string `json:"duration"`
+	Video        string `json:"video"`
+	Progress     string `json:"progress"`
+	ProgressCode int    `json:"progress_code"`
 }
 
 type Section struct {

@@ -17,3 +17,15 @@ func (l *Lesson) IsQuiz() bool {
 	}
 	return false
 }
+
+func (l *Lesson) GetProgressName() (status string) {
+	switch l.Progress {
+	case 0:
+		status = "open"
+	case 1:
+		status = "failed"
+	case 2:
+		status = "complete"
+	}
+	return status
+}
