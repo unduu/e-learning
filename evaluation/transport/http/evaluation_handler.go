@@ -483,7 +483,7 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 
 	// Response
 	grade := fmt.Sprintf("%.f", result.Grade)
-	msg := "To Pass 80% or higher"
+	msg := "To Pass get 100%"
 	res := PostTestResultResponse{Grade: grade + "%", Pass: result.Pass}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
