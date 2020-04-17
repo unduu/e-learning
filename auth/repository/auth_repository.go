@@ -23,7 +23,7 @@ func (a *AuthRepository) GetByUsername(username string) (*model.User, error) {
 	queryParams := map[string]interface{}{
 		"username": username,
 	}
-	query, err := a.conn.PrepareNamed(`SELECT username,role,status,status_code,phone FROM users WHERE username=:username`)
+	query, err := a.conn.PrepareNamed(`SELECT username,role,status,status_code,phone,verification_code FROM users WHERE username=:username`)
 	if err != nil {
 		fmt.Println("Error db GetByUsername->PrepareNamed : ", err)
 	}
