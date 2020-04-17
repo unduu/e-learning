@@ -33,6 +33,7 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.GET("test/pre", mw.AuthMiddleware, handler.PreEvaluation)
 	router.POST("test/pre", mw.AuthMiddleware, handler.ProcessEvaluationAnswer)
 	router.GET("test/post", mw.AuthMiddleware, handler.PostEvaluation)
+	router.GET("test/post/result", mw.AuthMiddleware, handler.PostTestResult)
 	router.POST("test/post", mw.AuthMiddleware, handler.ProcessPostAnswer)
 	router.GET("test/quiz", mw.AuthMiddleware, handler.QuizEvaluation)
 	router.POST("test/quiz", mw.AuthMiddleware, handler.ProcessQuizAnswer)
@@ -469,5 +470,20 @@ func (e *EvaluationHandler) ResetPostStatus(c *gin.Context) {
 	// Response
 	msg := "Your post test status has been reset"
 	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// PostTestResult return user post test result
+func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
+	// User session
+	loggedIn := e.Middleware.GetLoggedInUser(c)
+
+	// Result
+	result := e.EvaluationUsecase.PostTestResult(loggedIn.Username)
+
+	// Response
+	grade := fmt.Sprintf("%.f", result.Grade)
+	msg := "To Pass 80% or higher"
+	res := PostTestResultResponse{Grade: grade + "%", Pass: result.Pass}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

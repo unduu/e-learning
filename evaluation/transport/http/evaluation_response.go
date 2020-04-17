@@ -33,3 +33,8 @@ type PaginationResponse struct {
 type ProcessPostAnswerResponse struct {
 	Grade string `json:"grade"`
 }
+
+type PostTestResultResponse struct {
+	Grade string `json:"grade"`
+	Pass  bool   `json:"pass"`
+}

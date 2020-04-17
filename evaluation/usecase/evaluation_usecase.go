@@ -141,6 +141,18 @@ func (a *EvaluationUsecase) CheckAnswerResult(answer string) *model.Answer {
 	}
 }
 
+func (a *EvaluationUsecase) PostTestResult(username string) *model.Result {
+	result := &model.Result{}
+	// Check if user already join post test
+	exists, answer := a.IsAnswerExists(username, "posttest")
+	if exists {
+		answerObj := a.CheckAnswerResult(answer.Selected)
+		result.Pass = answerObj.IsPass()
+		result.Grade = answerObj.Grade
+	}
+	return result
+}
+
 // SaveAnswer insert user answer to databases
 func (a *EvaluationUsecase) SaveAnswer(username string, testType string, answer string, grade float64) {
 	a.repository.InsertAnswer(username, testType, answer, grade)

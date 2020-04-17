@@ -7,6 +7,7 @@ type Usecase interface {
 	StartPostEvaluation(username string, page int, limit int) (*model.Assesment, int)
 	IsAnswerExists(username string, module string) (isExist bool, answer *model.UserAnswerDB)
 	CheckAnswerResult(answer string) *model.Answer
+	PostTestResult(username string) *model.Result
 	SaveAnswer(username string, testType string, answer string, grade float64)
 	ArchivedPrePostAnswer(username string)
 	ArchivedPostAnswer(username string)
