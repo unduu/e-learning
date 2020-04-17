@@ -128,8 +128,8 @@ func (a *AuthUsecase) SendVerificationCode(code string, phone string) {
 	}
 }
 
-func (a *AuthUsecase) ResendVerificationCode(phone string, username string) bool {
-	user, _ := a.repository.GetByPhone(phone)
+func (a *AuthUsecase) ResendVerificationCode(username string) bool {
+	user, _ := a.repository.GetByUsername(username)
 
 	if user.Username == username {
 		a.SendVerificationCode(user.VerificationCode, user.Phone)

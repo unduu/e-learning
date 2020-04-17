@@ -186,25 +186,11 @@ func (a *AuthHandler) ResetPassword(c *gin.Context) {
 
 // ResendVerifCode resend verification code to user phone
 func (a *AuthHandler) ResendVerifCode(c *gin.Context) {
-	// Request validation
-	var req RequestResendVerifCode
-	err := c.ShouldBind(&req)
-	if err != nil {
-		var errValidation []response.Error
-		for _, fieldErr := range err.(validator.ValidationErrors) {
-			e := fieldErr.Translate(a.Validator.Translation)
-			error := response.Error{fieldErr.Field(), e}
-			errValidation = append(errValidation, error)
-		}
-		response.RespondErrorJSON(c.Writer, errValidation)
-		return
-	}
 	// Session
 	loggedIn := a.Middleware.GetLoggedInUser(c)
 
 	// Processing
-	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
-	ok := a.AuthUsecase.ResendVerificationCode(phoneNormalize, loggedIn.Username)
+	ok := a.AuthUsecase.ResendVerificationCode(loggedIn.Username)
 
 	// Response Error
 	if !ok {
