@@ -158,8 +158,8 @@ func (a *AuthHandler) ForgotPassword(c *gin.Context) {
 
 	// Response
 	msg := "We have sent a confirmation code to reset your password"
-	//res := make([]string, 0)
-	res := ForgotPasswordResponseTemp{ConfirmationCode: code}
+	res := struct{}{}
+	//res := ForgotPasswordResponseTemp{ConfirmationCode: code}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
