@@ -71,7 +71,8 @@ func (a *AuthUsecase) Register(fullname string, phone string, email string, user
 
 	ok := a.repository.InsertNewUser(user, vcode)
 	if ok > 0 {
-		a.SendVerificationCode(vcode, phone)
+		body := "Thank you for registering to Menthorsip Program. Please enter this verification code to activate your account. Your verification code is " + vcode
+		a.SendVerificationCode(vcode, phone, body)
 	}
 	return vcode, ok
 }
@@ -96,7 +97,7 @@ func (a *AuthUsecase) ResetPassword(password string, passkey string) (affected i
 	return isValid
 }
 
-func (a *AuthUsecase) SendVerificationCode(code string, phone string) {
+func (a *AuthUsecase) SendVerificationCode(code string, phone string, body string) {
 	// Set account keys & information
 	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
 	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
@@ -105,8 +106,7 @@ func (a *AuthUsecase) SendVerificationCode(code string, phone string) {
 	msgData := url.Values{}
 	msgData.Set("To", "+"+phone)
 	msgData.Set("From", "+15404015748")
-	msgData.Set("Body", "Thank you for registering to Menthorsip Program. Please enter this verification code"+
-		" to activate your account. Your verification code is "+code)
+	msgData.Set("Body", body)
 	msgDataReader := *strings.NewReader(msgData.Encode())
 
 	client := &http.Client{}
@@ -132,7 +132,8 @@ func (a *AuthUsecase) ResendVerificationCode(username string) bool {
 	user, _ := a.repository.GetByUsername(username)
 
 	if user.Username == username {
-		a.SendVerificationCode(user.VerificationCode, user.Phone)
+		body := "Thank you for registering to Menthorsip Program. Please enter this verification code to activate your account. Your verification code is " + user.VerificationCode
+		a.SendVerificationCode(user.VerificationCode, user.Phone, body)
 		return true
 	}
 	return false

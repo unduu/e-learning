@@ -150,7 +150,11 @@ func (a *AuthHandler) ForgotPassword(c *gin.Context) {
 
 	// Processing
 	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
-	_, code := a.AuthUsecase.ForgotPassword(phoneNormalize)
+	affected, code := a.AuthUsecase.ForgotPassword(phoneNormalize)
+	if affected > 0 {
+		body := "You requested to reset your password, please enter this code " + code
+		a.AuthUsecase.SendVerificationCode(code, phoneNormalize, body)
+	}
 
 	// Response
 	msg := "We have sent a confirmation code to reset your password"
