@@ -331,6 +331,9 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 		return
 	}
 
+	// Remove double quote start & end from answer
+	req.Answer = req.Answer[1 : len(req.Answer)-1]
+
 	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer, answerObj.Grade)
 	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
@@ -384,6 +387,9 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 		return
 	}
 
+	// Remove double quote start & end from answer
+	req.Answer = req.Answer[1 : len(req.Answer)-1]
+
 	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "posttest", req.Answer, answerObj.Grade)
 
@@ -430,6 +436,9 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 			return
 		}
 	}
+
+	// Remove double quote start & end from answer
+	req.Answer = req.Answer[1 : len(req.Answer)-1]
 
 	// Check quiz result
 	answerObj := e.EvaluationUsecase.CheckAnswerResult(req.Answer)
