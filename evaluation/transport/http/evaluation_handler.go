@@ -490,9 +490,28 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 	// Result
 	result := e.EvaluationUsecase.PostTestResult(loggedIn.Username)
 
+	// Post test status
+	postTestStatus := 1
+	courses := e.LearningUsecase.GetCourseList()
+	for _, course := range courses {
+		_, statusCode := course.GetParticipantStatus(loggedIn.Username)
+		if statusCode < 2 {
+			postTestStatus = 0
+		}
+	}
+
+	// User complete past test
+	if result.Pass && postTestStatus == 1 {
+		postTestStatus = 2
+	}
+
 	// Response
 	grade := fmt.Sprintf("%.f", result.Grade)
 	msg := "To Pass get 100%"
-	res := PostTestResultResponse{Grade: grade + "%", Pass: result.Pass}
+	res := PostTestResultResponse{
+		Grade:  grade + "%",
+		Pass:   result.Pass,
+		Status: postTestStatus,
+	}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

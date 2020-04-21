@@ -35,6 +35,7 @@ type ProcessPostAnswerResponse struct {
 }
 
 type PostTestResultResponse struct {
-	Grade string `json:"grade"`
-	Pass  bool   `json:"pass"`
+	Grade  string `json:"grade"`
+	Pass   bool   `json:"pass"`
+	Status int    `json:"status_code"`
 }
