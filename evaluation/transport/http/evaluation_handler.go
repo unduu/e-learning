@@ -13,7 +13,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	//"gopkg.in/go-playground/validator.v9"
 )
 
 type EvaluationHandler struct {

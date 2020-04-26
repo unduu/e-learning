@@ -7,6 +7,9 @@ import (
 	"github.com/unduu/e-learning/learning/model"
 	"github.com/unduu/e-learning/middleware"
 	"github.com/unduu/e-learning/response"
+
+	"gopkg.in/go-playground/validator.v9"
+	"reflect"
 	"strconv"
 )
 
@@ -24,7 +27,7 @@ func NewHttpLearningHandler(router *gin.RouterGroup, mw *middleware.Middleware, 
 	}
 	router.GET("module", mw.AuthMiddleware, handler.ModuleList)
 	router.GET("module/:alias/content", mw.AuthMiddleware, handler.LearningContent)
-
+	router.POST("module/:alias/:lesson/video", mw.AuthMiddleware, handler.SaveVideoProgress)
 }
 
 // ModuleList return list of courses / modules
@@ -71,7 +74,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 	loggedIn := l.Middleware.GetLoggedInUser(c)
 	// Processing
 	contentArr := []Section{}
-	course := l.LearningUsecase.GetCourseLessons(alias)
+	course := l.LearningUsecase.GetCourseLessons(alias, loggedIn.Username)
 	_, statusCode := course.GetParticipantStatus(loggedIn.Username)
 	// Response cannot access course
 	if statusCode == 0 {
@@ -90,8 +93,10 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 			lessonRes := Lesson{
 				Type:         lessonObj.Type,
 				Title:        lessonObj.Title,
+				Permalink:    lessonObj.Permalink,
 				Duration:     courseDuration.Minute(),
 				Video:        lessonObj.Video,
+				Timebar:      lessonObj.Timebar,
 				Progress:     lessonObj.GetProgressName(),
 				ProgressCode: lessonObj.Progress,
 			}
@@ -116,5 +121,42 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 	msg := "Learning module list"
 	res := ResponseLearningContent{Content: contentArr}
 
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// SaveVideoProgress Save user video time progress to resume later
+func (l *LearningHandler) SaveVideoProgress(c *gin.Context) {
+	// Path param
+	alias := c.Params.ByName("alias")
+	lesson := c.Params.ByName("lesson")
+	// Form Data
+	var req RequestSaveVideoProgress
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(l.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	// Session
+	loggedIn := l.Middleware.GetLoggedInUser(c)
+	// Processing
+	l.LearningUsecase.UpdateVideoProgress(loggedIn.Username, alias, lesson, req.Timebar)
+	// Response
+	msg := "User video progres has been saved"
+	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

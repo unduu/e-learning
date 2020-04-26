@@ -18,8 +18,10 @@ type ResponseModuleList struct {
 type Lesson struct {
 	Type         string `json:"type"`
 	Title        string `json:"title"`
+	Permalink    string `json:"permalink"`
 	Duration     string `json:"duration"`
 	Video        string `json:"video"`
+	Timebar      int    `json:"timebar"`
 	Progress     string `json:"progress"`
 	ProgressCode int    `json:"progress_code"`
 }

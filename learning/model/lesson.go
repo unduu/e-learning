@@ -3,11 +3,13 @@ package model
 import "strings"
 
 type Lesson struct {
-	Type     string
-	Title    string
-	Duration int
-	Video    string
-	Progress int
+	Type      string
+	Title     string
+	Permalink string
+	Duration  int
+	Video     string
+	Timebar   int
+	Progress  int
 }
 
 func (l *Lesson) IsQuiz() bool {

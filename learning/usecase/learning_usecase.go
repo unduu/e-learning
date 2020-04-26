@@ -24,7 +24,7 @@ func (a *LearningUsecase) GetCourseList() (results []*model.Course) {
 	for _, course := range courseArr {
 		participants := a.repository.GetParticipantByCourse(course.Id)
 		// Get detail total lessons & hours
-		course := a.GetCourseLessons(course.Alias)
+		course := a.GetCourseLessons(course.Alias, "")
 		course.AddParticipant(participants)
 		results = append(results, course)
 	}
@@ -32,20 +32,22 @@ func (a *LearningUsecase) GetCourseList() (results []*model.Course) {
 	return results
 }
 
-// GetCourseLessons return lessons from a course
-func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) {
+// GetCourseLessons return lessons in a course
+func (a *LearningUsecase) GetCourseLessons(alias string, username string) (course *model.Course) {
 
 	course = a.repository.GetCourseByAlias(alias)
 	participants := a.repository.GetParticipantByCourse(course.Id)
 	course.AddParticipant(participants)
-	data := a.repository.GetLessonsByCourseId(course.Id)
+	data := a.repository.GetLessonsByCourseId(course.Id, username)
 	for _, row := range data {
 		lesson := &model.Lesson{
-			Type:     row.Type,
-			Title:    row.Title,
-			Duration: row.Duration,
-			Video:    row.Video,
-			Progress: 0,
+			Type:      row.Type,
+			Title:     row.Title,
+			Permalink: row.Permalink,
+			Duration:  row.Duration,
+			Video:     row.Video,
+			Timebar:   row.Timebar,
+			Progress:  0,
 		}
 
 		currSection := course.GetSection(row.Name)
@@ -68,20 +70,32 @@ func (a *LearningUsecase) GetCourseLessons(alias string) (course *model.Course) 
 
 // SetDefaultCourse set default course for new registered user
 func (a *LearningUsecase) SetDefaultCourse(username string) {
+	courseArr := []int{1, 2, 3, 4, 5}
 	a.repository.DeleteUserFromAllCourse(username)
-	a.repository.AddCourseParticipant(username, 1, 1)
-	a.repository.AddCourseParticipant(username, 2, 0)
-	a.repository.AddCourseParticipant(username, 3, 0)
-	a.repository.AddCourseParticipant(username, 4, 0)
-	a.repository.AddCourseParticipant(username, 5, 0)
+	a.repository.DeleteUserAllLessonProgress(username)
+	for i, courseId := range courseArr {
+		// Set first course status to open
+		status := 0
+		if i == 0 {
+			status = 1
+		}
+		// Set default course for user
+		a.repository.AddCourseParticipant(username, courseId, status)
+		// Set default learning progress
+		lessons := a.repository.GetLessonsByCourseId(courseId, "")
+		for _, lesson := range lessons {
+			a.repository.AddLessonProgress(username, lesson.LessonID)
+		}
+	}
 }
 
+// UpdateUserCourseProgress set user course last progress based on quiz result
 func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string) {
 	pass := false
 	// Get course by quiz name
 	course := a.repository.GetCourseByQuiz(quiz)
 	// Get lesson from quiz
-	lessons := a.repository.GetLessonsByCourseId(course.Id)
+	lessons := a.repository.GetLessonsByCourseId(course.Id, username)
 	for _, row := range lessons {
 		lesson := &model.Lesson{
 			Type:     row.Type,
@@ -102,6 +116,7 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 	}
 }
 
+// SetLessonProgress set user lesson progress
 func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesson) *model.Lesson {
 	if lesson.IsQuiz() {
 		lesson.Progress = 0
@@ -117,4 +132,9 @@ func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesso
 
 	}
 	return lesson
+}
+
+func (a *LearningUsecase) UpdateVideoProgress(username string, course string, lesson string, time int) {
+	les := a.repository.GetLessonByPermalink(course, lesson)
+	a.repository.UpdateLearningVideoTimebar(username, les.LessonID, time)
 }
