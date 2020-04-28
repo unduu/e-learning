@@ -1,6 +1,8 @@
 package model
 
-import "strings"
+import (
+	"strings"
+)
 
 type Course struct {
 	Id           int
@@ -62,7 +64,7 @@ func (c *Course) CountDuration() (total int) {
 
 func (c *Course) GetTotalLesson() (total int) {
 	for _, section := range c.Sections {
-		total = len(section.Lessons)
+		total = total + len(section.Lessons)
 	}
 	return total
 }
