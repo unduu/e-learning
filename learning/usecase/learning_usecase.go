@@ -104,7 +104,7 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 			Video:    row.Video,
 		}
 		lesson = a.SetLessonProgress(username, lesson)
-		if lesson.Progress == 1 {
+		if lesson.Progress == 2 {
 			pass = true
 		}
 	}
