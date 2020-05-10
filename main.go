@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -25,10 +26,16 @@ import (
 
 	customValidator "github.com/unduu/e-learning/helper/validator"
 
+	"github.com/joho/godotenv"
 	"github.com/unduu/e-learning/middleware"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	dbConn := initDB()
 	router := gin.Default()
 	m := middleware.NewMiddleware(dbConn)
@@ -40,17 +47,17 @@ func main() {
 
 	router.Use(Cors())
 
-	_authUsecase := _authUsecase.NewAuthUsecase(authRepo)
-	_evaluationUsecase := _evaluationUsecase.NewEvaluationUsecase(evalauationRepo)
-	_learningUsecase := _learningUsecase.NewLearningUsecase(learningRepo, _evaluationUsecase)
+	authUsecase := _authUsecase.NewAuthUsecase(authRepo)
+	evaluationUsecase := _evaluationUsecase.NewEvaluationUsecase(evalauationRepo)
+	learningUsecase := _learningUsecase.NewLearningUsecase(learningRepo, evaluationUsecase)
 
 	s := router.Group("")
 	{
-		_authHandler.NewHttpAuthHandler(s, m, validator, _authUsecase)
+		_authHandler.NewHttpAuthHandler(s, m, validator, authUsecase)
 
-		_learningHandler.NewHttpLearningHandler(s, m, validator, _learningUsecase)
+		_learningHandler.NewHttpLearningHandler(s, m, validator, learningUsecase)
 
-		_evaluationHandler.NewHttpAuthHandler(s, m, validator, _evaluationUsecase, _learningUsecase)
+		_evaluationHandler.NewHttpAuthHandler(s, m, validator, evaluationUsecase, learningUsecase)
 	}
 
 	config := cors.DefaultConfig()
@@ -61,7 +68,7 @@ func main() {
 	router.Use(cors.New(config))
 	router.Use(cors.Default())
 
-	err := http.ListenAndServe(":6000", router)
+	err = http.ListenAndServe(":6000", router)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -78,11 +85,11 @@ func Cors() gin.HandlerFunc {
 func initDB() *sqlx.DB {
 	var err error
 
-	dbHost := "localhost"
-	dbPort := "3306"
-	dbUser := "root"
-	dbPass := "biteme10"
-	dbName := "elearning"
+	dbHost := os.Getenv("DBHOST")
+	dbPort := os.Getenv("DBPORT")
+	dbUser := os.Getenv("DBUSER")
+	dbPass := os.Getenv("DBPASS")
+	dbName := os.Getenv("DBNAME")
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 	val := url.Values{}
 	val.Add("parseTime", "1")
