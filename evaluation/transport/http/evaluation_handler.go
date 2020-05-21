@@ -149,12 +149,15 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	loggedIn := e.Middleware.GetLoggedInUser(c)
 
 	// Check if user already join post test
-	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
+	exists, answer := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
-		msg := "You already join post test"
-		err := struct{}{}
-		response.RespondSuccessJSON(c.Writer, err, msg)
-		return
+		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
+		if answerObj.IsPass() {
+			msg := "You already pass this post test"
+			err := struct{}{}
+			response.RespondSuccessJSON(c.Writer, err, msg)
+			return
+		}
 	}
 
 	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
