@@ -68,7 +68,7 @@ func main() {
 	router.Use(cors.New(config))
 	router.Use(cors.Default())
 
-	err = http.ListenAndServe(":6000", router)
+	err = http.ListenAndServe(os.Getenv("PORT"), router)
 	if err != nil {
 		fmt.Println(err)
 	}
