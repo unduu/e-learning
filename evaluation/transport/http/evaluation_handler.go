@@ -158,6 +158,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
 		}
+		e.EvaluationUsecase.ArchivedPostAnswer(loggedIn.Username)
 	}
 
 	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
