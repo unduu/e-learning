@@ -39,3 +39,8 @@ type PostTestResultResponse struct {
 	Pass   bool   `json:"pass"`
 	Status int    `json:"status_code"`
 }
+
+type ListQuestionResponse struct {
+	Questions  []Question `json:"questions"`
+	Pagination PaginationResponse
+}

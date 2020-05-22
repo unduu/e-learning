@@ -181,3 +181,57 @@ func (a *EvaluationUsecase) ArchivedQuizAnswer(username string, quizName string)
 	archivedName := "archived_" + timeStr
 	a.repository.UpdateUserAnswerStatus(username, quizName, archivedName)
 }
+
+// AddQuestion add a new question
+func (a *EvaluationUsecase) AddQuestion(question string, module string, option string, answer string) {
+	q := model.Question{
+		Module:     module,
+		Type:       "multiple_choice",
+		AttachType: "",
+		Attachment: "",
+		Text:       question,
+		ChoicesDB:  option,
+		Answer:     answer,
+	}
+	a.repository.InsertQuestion(q)
+}
+
+// EditQuestion change question content
+func (a *EvaluationUsecase) EditQuestion(id int, question string, option string, answer string) {
+	q := model.Question{
+		Id:        id,
+		Text:      question,
+		ChoicesDB: option,
+		Answer:    answer,
+	}
+	a.repository.UpdateQuestion(q)
+}
+
+// DeleteQuestion remove question
+func (a *EvaluationUsecase) DeleteQuestion(id int) {
+	q := model.Question{
+		Id: id,
+	}
+	a.repository.DeleteQuestion(q)
+}
+
+func (a *EvaluationUsecase) ListQuestion(page int, limit int) (model.Assesment, int) {
+	assesment := model.Assesment{Status: "active"}
+	assesment.SetDuration()
+
+	questionsList, totalData, err := a.repository.GetAllQuestions(page, limit)
+	if err != nil {
+		fmt.Println("ERROR StartEvaluation : ", err)
+	}
+	for _, questionRow := range questionsList {
+		// Decode choices from db then set as choice struct
+		cc := model.Choice{}
+		err := json.Unmarshal([]byte(questionRow.ChoicesDB), &cc)
+		if err != nil {
+			fmt.Println("ERROR StartEvaluation->Unmarshal : ", err)
+		}
+		questionRow.Choices = cc
+		assesment.AddQuestion(questionRow)
+	}
+	return assesment, totalData
+}

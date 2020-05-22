@@ -206,3 +206,65 @@ func (a *EvaluationRepository) UpdateUserAnswerStatus(username string, module st
 
 	return affected
 }
+
+// InsertQuestion Add a new question
+func (a *EvaluationRepository) InsertQuestion(question model.Question) {
+	_, err := a.conn.NamedQuery(`INSERT INTO questions (module, type,question,choices,answer) 
+											VALUES (:module, :type, :question, :choices, :answer)`,
+		question)
+	if err != nil {
+		fmt.Println("ERROR InsertQuestion ", err)
+	}
+}
+
+// UpdateQuestion update question
+func (a *EvaluationRepository) UpdateQuestion(question model.Question) {
+	_, err := a.conn.NamedQuery(`UPDATE questions SET question = :question, choices = :choices, answer = :answer WHERE id = :id`,
+		question)
+	if err != nil {
+		fmt.Println("ERROR UpdateQuestion ", err)
+	}
+}
+
+// DeleteQuestion remove question from database
+func (a *EvaluationRepository) DeleteQuestion(question model.Question) {
+	_, err := a.conn.NamedQuery(`DELETE FROM questions WHERE id = :id`,
+		question)
+	if err != nil {
+		fmt.Println("ERROR DeleteQuestion ", err)
+	}
+}
+
+func (a *EvaluationRepository) GetAllQuestions(page int, limit int) ([]*model.Question, int, error) {
+	offset := (page - 1) * limit
+	questions := make([]*model.Question, 0)
+
+	var count struct {
+		Total int `db:"total"`
+	}
+	queryParams := map[string]interface{}{
+		"offset": offset,
+		"limit":  limit,
+	}
+	query, err := a.conn.PrepareNamed(`SELECT id, type, attachment_type, attachment, question, choices FROM questions ORDER BY id DESC LIMIT :offset, :limit `)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions`)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	err = query.Select(&questions, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	err = queryTotal.Get(&count, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	return questions, count.Total, err
+}

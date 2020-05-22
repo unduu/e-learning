@@ -38,6 +38,10 @@ func NewHttpAuthHandler(router *gin.RouterGroup, mw *middleware.Middleware, v *c
 	router.POST("test/quiz", mw.AuthMiddleware, handler.ProcessQuizAnswer)
 	router.POST("test/pre/reset", mw.AuthMiddleware, handler.ResetPrePostStatus)
 	router.POST("test/post/reset", mw.AuthMiddleware, handler.ResetPostStatus)
+	router.POST("test/question", mw.AuthMiddleware, handler.AddQuestion)
+	router.PUT("test/question/:id", mw.AuthMiddleware, handler.EditQuestion)
+	router.DELETE("test/question/:id", mw.AuthMiddleware, handler.DeleteQuestion)
+	router.GET("test/question", mw.AuthMiddleware, handler.ListOfQuestion)
 }
 
 // PreEvaluation return pre test question
@@ -516,5 +520,153 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 		Pass:   result.Pass,
 		Status: postTestStatus,
 	}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// AddQuestion add new question
+func (e *EvaluationHandler) AddQuestion(c *gin.Context) {
+	// Form Data
+	var req RequestAddQuestion
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	e.EvaluationUsecase.AddQuestion(req.Question, "prepost", req.Choices, req.Answer)
+
+	// Response
+	msg := "New question has been added"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// AddQuestion add new question
+func (e *EvaluationHandler) EditQuestion(c *gin.Context) {
+	// Form Data
+	var req RequestEditQuestion
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	id := c.Params.ByName("id")
+
+	i, err := strconv.Atoi(id)
+	e.EvaluationUsecase.EditQuestion(i, req.Question, req.Choices, req.Answer)
+
+	// Response
+	msg := "This question has been updated"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// DeleteQuestion delete a question
+func (e *EvaluationHandler) DeleteQuestion(c *gin.Context) {
+	id := c.Params.ByName("id")
+	i, _ := strconv.Atoi(id)
+
+	e.EvaluationUsecase.DeleteQuestion(i)
+
+	// Response
+	msg := "This question has been deleted"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// DeleteQuestion delete a question
+func (e *EvaluationHandler) ListOfQuestion(c *gin.Context) {
+	// Form Data
+	var req RequestListQuestion
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(e.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	assesment, totalData := e.EvaluationUsecase.ListQuestion(req.Page, req.Limit)
+	// Pagination
+	totalPage := int(math.Round(float64(totalData) / float64(req.Limit)))
+	prevPage := req.Page - 1
+	if prevPage <= 0 {
+		prevPage = 1
+	}
+	nextPage := req.Page + 1
+	if nextPage >= totalPage {
+		nextPage = totalPage
+	}
+
+	msg := "List of questions"
+	res := ListQuestionResponse{
+		Pagination: PaginationResponse{
+			TotalData:   totalData,
+			TotalPage:   totalPage,
+			Limit:       10,
+			Current:     1,
+			PreviousUrl: "/test/pre?page=" + strconv.Itoa(prevPage) + "&limit=" + strconv.Itoa(req.Limit),
+			NextUrl:     "/test/pre?page=" + strconv.Itoa(nextPage) + "&limit=" + strconv.Itoa(req.Limit),
+		},
+	}
+
+	for _, question := range assesment.QuestionList {
+		q := Question{
+			Id:         question.Id,
+			Type:       question.Type,
+			AttachType: question.AttachType,
+			Attachment: question.Attachment,
+			Question:   question.Text,
+			Choices: Choice{
+				Type:    question.Choices.Type,
+				Options: question.Choices.Options,
+			},
+		}
+		res.Questions = append(res.Questions, q)
+	}
+
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

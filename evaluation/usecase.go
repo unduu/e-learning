@@ -12,4 +12,8 @@ type Usecase interface {
 	ArchivedPrePostAnswer(username string)
 	ArchivedPostAnswer(username string)
 	ArchivedQuizAnswer(username string, quizName string)
+	AddQuestion(question string, module string, option string, answer string)
+	EditQuestion(id int, question string, option string, answer string)
+	DeleteQuestion(id int)
+	ListQuestion(page int, limit int) (model.Assesment, int)
 }

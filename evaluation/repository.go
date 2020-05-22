@@ -9,4 +9,8 @@ type Repository interface {
 	GetUserAnswers(username string, module string) *model.UserAnswerDB
 	InsertAnswer(username string, testType string, answer string, grade float64) (affected int64)
 	UpdateUserAnswerStatus(username string, module string, newStatus string) (affected int64)
+	InsertQuestion(question model.Question)
+	UpdateQuestion(question model.Question)
+	DeleteQuestion(question model.Question)
+	GetAllQuestions(page int, limit int) ([]*model.Question, int, error)
 }
