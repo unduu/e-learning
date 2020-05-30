@@ -22,7 +22,7 @@ func NewEvaluationUsecase(repository evaluation.Repository) *EvaluationUsecase {
 // StartEvaluation return list of pre test question
 func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
-	assesment.SetDuration()
+	assesment.SetDuration(15)
 
 	questionsList, totalData, err := a.repository.GetQuestions(module, page, limit)
 
@@ -45,12 +45,12 @@ func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) 
 }
 
 // StartPostEvaluation return list of answered pre test question
-func (a *EvaluationUsecase) StartPostEvaluation(username string, page int, limit int) (*model.Assesment, int) {
+func (a *EvaluationUsecase) StartPostEvaluation(username string) (*model.Assesment, int) {
 	questionIdArr := []string{}
 	answerArr := []model.Answer{}
 
 	assesment := &model.Assesment{Status: "active"}
-	assesment.SetDuration()
+	assesment.SetDuration(15)
 
 	answer := a.repository.GetUserAnswers(username, "pretest")
 	if answer == nil {
@@ -217,7 +217,7 @@ func (a *EvaluationUsecase) DeleteQuestion(id int) {
 
 func (a *EvaluationUsecase) ListQuestion(page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
-	assesment.SetDuration()
+	assesment.SetDuration(10)
 
 	questionsList, totalData, err := a.repository.GetAllQuestions(page, limit)
 	if err != nil {

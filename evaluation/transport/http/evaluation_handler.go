@@ -165,7 +165,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 		e.EvaluationUsecase.ArchivedPostAnswer(loggedIn.Username)
 	}
 
-	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username, req.Page, req.Limit)
+	assesment, totalData := e.EvaluationUsecase.StartPostEvaluation(loggedIn.Username)
 	if assesment == nil {
 		msg := "You have to join pre test first"
 		err := struct{}{}
