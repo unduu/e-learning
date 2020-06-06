@@ -4,6 +4,7 @@ import (
 	"github.com/unduu/e-learning/evaluation"
 	"github.com/unduu/e-learning/learning"
 	"github.com/unduu/e-learning/learning/model"
+	"strings"
 )
 
 type LearningUsecase struct {
@@ -137,4 +138,40 @@ func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesso
 func (a *LearningUsecase) UpdateVideoProgress(username string, course string, lesson string, time int) {
 	les := a.repository.GetLessonByPermalink(course, lesson)
 	a.repository.UpdateLearningVideoTimebar(username, les.LessonID, time)
+}
+
+func (a *LearningUsecase) AddCourse(title string, subtitle string, thumbnail string) {
+	lower := strings.ToLower(title)
+	permalink := strings.Replace(lower, " ", "-", -1)
+	course := &model.Course{
+		Title:     title,
+		Subtitle:  subtitle,
+		Alias:     permalink,
+		Thumbnail: thumbnail,
+	}
+	a.repository.InsertCourse(course)
+}
+
+func (a *LearningUsecase) EditCourse(id int, title string, subtitle string, thumbnail string) {
+	lower := strings.ToLower(title)
+	permalink := strings.Replace(lower, " ", "-", -1)
+	course := &model.Course{
+		Id:        id,
+		Alias:     permalink,
+		Title:     title,
+		Subtitle:  subtitle,
+		Thumbnail: thumbnail,
+	}
+	a.repository.UpdateCourse(course)
+}
+
+func (a *LearningUsecase) DeleteCourse(id int) {
+	course := &model.Course{
+		Id: id,
+	}
+	a.repository.DeleteCourse(course)
+}
+
+func (a *LearningUsecase) AddCourseContent(id int, section string, name string, module string, title string, video string) {
+
 }

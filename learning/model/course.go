@@ -6,11 +6,11 @@ import (
 
 type Course struct {
 	Id           int
-	Title        string
-	Subtitle     string
-	Alias        string
+	Title        string `db:"title"`
+	Subtitle     string `db:"subtitle"`
+	Alias        string `db:"alias"`
 	TotalLesson  int
-	Thumbnail    string
+	Thumbnail    string `db:"thumbnail"`
 	Participants []*Participant
 	Sections     []*Section
 }

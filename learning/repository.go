@@ -15,4 +15,8 @@ type Repository interface {
 	DeleteUserAllLessonProgress(username string) (affected int64)
 	UpdateParticipantStatus(username string, id int, newStatus int) (affected int64)
 	UpdateLearningVideoTimebar(username string, learningId int, time int) (affected int64)
+	InsertCourse(course *model.Course) (affected int64)
+	UpdateCourse(course *model.Course) (affected int64)
+	DeleteCourse(course *model.Course) (affected int64)
+	InsertCourseContent(courseId int, content *model.Lesson) (affected int64)
 }

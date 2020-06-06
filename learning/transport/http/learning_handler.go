@@ -28,6 +28,12 @@ func NewHttpLearningHandler(router *gin.RouterGroup, mw *middleware.Middleware, 
 	router.GET("module", mw.AuthMiddleware, handler.ModuleList)
 	router.GET("module/:alias/content", mw.AuthMiddleware, handler.LearningContent)
 	router.POST("module/:alias/:lesson/video", mw.AuthMiddleware, handler.SaveVideoProgress)
+
+	router.POST("module", mw.AuthMiddleware, handler.AddCourse)
+	router.PUT("module/:id", mw.AuthMiddleware, handler.EditCourse)
+	router.DELETE("module/:id", mw.AuthMiddleware, handler.DeleteCourse)
+
+	//router.POST("module/:id/content", mw.AuthMiddleware, handler.AddCourseContent)
 }
 
 // ModuleList return list of courses / modules
@@ -157,6 +163,121 @@ func (l *LearningHandler) SaveVideoProgress(c *gin.Context) {
 	l.LearningUsecase.UpdateVideoProgress(loggedIn.Username, alias, lesson, req.Timebar)
 	// Response
 	msg := "User video progres has been saved"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+// AddCourse Add new course
+func (l *LearningHandler) AddCourse(c *gin.Context) {
+	// Form Data
+	var req RequestAddCourse
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(l.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	l.LearningUsecase.AddCourse(req.Title, req.Subtitle, req.Thumbnail)
+
+	// Response
+	msg := "New Course has been added"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+func (l *LearningHandler) EditCourse(c *gin.Context) {
+	// Form Data
+	var req RequestAddCourse
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(l.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+	id := c.Params.ByName("id")
+	idInt, _ := strconv.Atoi(id)
+
+	l.LearningUsecase.EditCourse(idInt, req.Title, req.Subtitle, req.Thumbnail)
+
+	// Response
+	msg := "Course data has been updated"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+func (l *LearningHandler) DeleteCourse(c *gin.Context) {
+	// Form Data
+	id := c.Params.ByName("id")
+	idInt, _ := strconv.Atoi(id)
+
+	l.LearningUsecase.DeleteCourse(idInt)
+
+	// Response
+	msg := "Course has been deleted"
+	res := struct{}{}
+	response.RespondSuccessJSON(c.Writer, res, msg)
+}
+
+func (l *LearningHandler) AddCourseContent(c *gin.Context) {
+	// Form Data
+	var req RequestAddCourseContent
+	// Validation
+	err := c.ShouldBind(&req)
+	if err != nil {
+		//a.Middleware.CheckValidate(err, c)
+		var errValidation []response.Error
+		if reflect.TypeOf(err).String() != "validator.ValidationErrors" {
+			error := response.Error{"", err.Error()}
+			errValidation = append(errValidation, error)
+			response.RespondErrorJSON(c.Writer, errValidation)
+			return
+		}
+		for _, fieldErr := range err.(validator.ValidationErrors) {
+			e := fieldErr.Translate(l.Validator.Translation)
+
+			error := response.Error{fieldErr.Field(), e}
+			errValidation = append(errValidation, error)
+		}
+		response.RespondErrorJSON(c.Writer, errValidation)
+		return
+	}
+
+	id := c.Params.ByName("id")
+	idInt, _ := strconv.Atoi(id)
+
+	l.LearningUsecase.AddCourseContent(idInt, req.Section, req.Name, req.Type, req.Title, req.Video)
+
+	// Response
+	msg := "New Course has been added"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

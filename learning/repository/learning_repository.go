@@ -349,3 +349,45 @@ func (a *LearningRepository) UpdateLearningVideoTimebar(username string, learnin
 
 	return affected
 }
+
+func (a *LearningRepository) InsertCourse(course *model.Course) (affected int64) {
+	_, err := a.conn.NamedQuery(`INSERT INTO courses (alias, title, subtitle, thumbnail) 
+											VALUES (:alias, :title, :subtitle, :thumbnail)`,
+		course)
+	if err != nil {
+		fmt.Println("ERROR InsertQuestion ", err)
+		return 0
+	}
+	return 1
+}
+
+func (a *LearningRepository) UpdateCourse(course *model.Course) (affected int64) {
+	_, err := a.conn.NamedQuery(`UPDATE courses SET alias = :alias, title = :title, subtitle = :subtitle, thumbnail = :thumbnail WHERE id = :id`,
+		course)
+	if err != nil {
+		fmt.Println("ERROR UpdateQuestion ", err)
+		return 0
+	}
+	return 1
+}
+
+func (a *LearningRepository) DeleteCourse(course *model.Course) (affected int64) {
+	_, err := a.conn.NamedQuery(`DELETE FROM courses WHERE id = :id`,
+		course)
+	if err != nil {
+		fmt.Println("ERROR DeleteQuestion ", err)
+		return 0
+	}
+	return 1
+}
+
+func (a *LearningRepository) InsertCourseContent(courseId int, content *model.Lesson) (affected int64) {
+	_, err := a.conn.NamedQuery(`INSERT INTO course_contents (course_id, type, title, permalink, content, section_name, section_desc, duration) 
+											VALUES (:alias, :title, :subtitle, :thumbnail)`,
+		content)
+	if err != nil {
+		fmt.Println("ERROR InsertQuestion ", err)
+		return 0
+	}
+	return 1
+}
