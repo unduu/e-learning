@@ -127,7 +127,9 @@ func (a *AuthHandler) Verify(c *gin.Context) {
 		return
 	}
 	msg := "Your account is activated"
-	res := struct{}{}
+	res := VerifyResponse{
+		User: User{loggedIn.Username, "menthor", "active", loggedIn.StatusCode},
+	}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 

@@ -23,3 +23,8 @@ type LoginResponseTemp struct {
 type ForgotPasswordResponseTemp struct {
 	ConfirmationCode string `json:"code"`
 }
+
+// Response after verify phone
+type VerifyResponse struct {
+	User User
+}
