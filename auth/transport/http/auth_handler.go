@@ -60,7 +60,7 @@ func (a *AuthHandler) Login(c *gin.Context) {
 	}
 	msg := "Welcome " + req.Username
 	res := LoginResponse{
-		User:  User{req.Username, "menthor", user.Status, user.StatusCode},
+		User:  User{req.Username, user.Role, user.Status, user.StatusCode},
 		Token: token,
 	}
 	response.RespondSuccessJSON(c.Writer, res, msg)
