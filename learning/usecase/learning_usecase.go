@@ -92,7 +92,7 @@ func (a *LearningUsecase) SetDefaultCourse(username string) {
 
 // UpdateUserCourseProgress set user course last progress based on quiz result
 func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string) {
-	pass := false
+	pass := true
 	// Get course by quiz name
 	course := a.repository.GetCourseByQuiz(quiz)
 	// Get lesson from quiz
@@ -105,10 +105,11 @@ func (a *LearningUsecase) UpdateUserCourseProgress(username string, quiz string)
 			Video:    row.Video,
 		}
 		lesson = a.SetLessonProgress(username, lesson)
-		if lesson.Progress == 2 {
-			pass = true
+		if lesson.Progress != 2 && lesson.IsQuiz() {
+			pass = false
 		}
 	}
+
 	if pass {
 		// Mark current course as finish
 		a.repository.UpdateParticipantStatus(username, course.Id, course.GetStatusCode("completed"))
