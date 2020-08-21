@@ -72,7 +72,7 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
-// Learning return course content
+// LearningContent return course content
 func (l *LearningHandler) LearningContent(c *gin.Context) {
 	// Path param
 	alias := c.Params.ByName("alias")
@@ -200,6 +200,7 @@ func (l *LearningHandler) AddCourse(c *gin.Context) {
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
+// EditCourse update course content
 func (l *LearningHandler) EditCourse(c *gin.Context) {
 	// Form Data
 	var req RequestAddCourse
@@ -234,6 +235,7 @@ func (l *LearningHandler) EditCourse(c *gin.Context) {
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
+// DeleteCourse delete course
 func (l *LearningHandler) DeleteCourse(c *gin.Context) {
 	// Form Data
 	id := c.Params.ByName("id")
@@ -247,6 +249,7 @@ func (l *LearningHandler) DeleteCourse(c *gin.Context) {
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
+// AddCourseContent
 func (l *LearningHandler) AddCourseContent(c *gin.Context) {
 	// Form Data
 	var req RequestAddCourseContent

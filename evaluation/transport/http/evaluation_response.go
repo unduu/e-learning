@@ -14,6 +14,12 @@ type Question struct {
 	Choices    Choice
 }
 
+type QuestionGroup struct {
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	TotalQuestions string `json:"total_questions"`
+}
+
 type PreEvaluationResponse struct {
 	StartTime  string `json:"start_time"`
 	EndTime    string `json:"end_time"`
@@ -43,4 +49,8 @@ type PostTestResultResponse struct {
 type ListQuestionResponse struct {
 	Questions  []Question `json:"questions"`
 	Pagination PaginationResponse
+}
+
+type ListOfGroupsQuestionResponse struct {
+	Questions []QuestionGroup
 }

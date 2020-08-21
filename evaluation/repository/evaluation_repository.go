@@ -268,3 +268,77 @@ func (a *EvaluationRepository) GetAllQuestions(page int, limit int) ([]*model.Qu
 
 	return questions, count.Total, err
 }
+
+func (a *EvaluationRepository) FetchQuestionGroups() []*model.QuestionGroup {
+	// DB Response struct
+	questionGroups := make([]*model.QuestionGroup, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT module,count(*) as total_questions FROM questions GROUP BY module;`)
+	if err != nil {
+		fmt.Println("Error db GetCorrectAnswerByQuestionID->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&questionGroups, queryParams)
+	if err != nil {
+		fmt.Println("Error db FetchQuestionGroups->query.Select : ", err)
+	}
+
+	return questionGroups
+}
+
+func (a *EvaluationRepository) FetchQuestionsByModule(moduleName string, page int, limit int) ([]*model.Question, int, error) {
+	offset := (page - 1) * limit
+	questions := make([]*model.Question, 0)
+
+	var count struct {
+		Total int `db:"total"`
+	}
+	queryParams := map[string]interface{}{
+		"module": moduleName,
+		"offset": offset,
+		"limit":  limit,
+	}
+	query, err := a.conn.PrepareNamed(`
+			SELECT id, type, attachment_type, attachment, question, choices 
+			FROM questions 
+			WHERE module = :module 
+			ORDER BY id DESC 
+			LIMIT :offset, :limit 
+	`)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions WHERE module = :module `)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	err = query.Select(&questions, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	err = queryTotal.Get(&count, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	return questions, count.Total, err
+}
+
+// DeleteGroupByName remove question from database
+func (a *EvaluationRepository) DeleteGroupByName(name string) {
+	q := model.Question{
+		Module: name,
+	}
+	_, err := a.conn.NamedQuery(`DELETE FROM questions WHERE module = :module`, q)
+	if err != nil {
+		fmt.Println("ERROR DeleteGroupByName ", err)
+	}
+}

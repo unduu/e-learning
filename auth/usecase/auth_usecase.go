@@ -39,6 +39,7 @@ func (a *AuthUsecase) Login(username string, password string) (user *model.User,
 		// Create the JWT claims, which includes the username and expiry time
 		claims := &model.Claims{
 			Username:   user.Username,
+			Role:       user.Role,
 			StatusCode: user.StatusCode,
 			StandardClaims: jwt.StandardClaims{
 				// In JWT, the expiry time is expressed as unix milliseconds

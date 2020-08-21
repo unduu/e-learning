@@ -16,4 +16,7 @@ type Usecase interface {
 	EditQuestion(id int, question string, option string, answer string)
 	DeleteQuestion(id int)
 	ListQuestion(page int, limit int) (model.Assesment, int)
+	GetQuestionGroups() []*model.QuestionGroup
+	GetQuestionByGroup(groupName string, page int, limit int) (model.Assesment, int)
+	RemoveGroupByname(name string)
 }

@@ -235,3 +235,33 @@ func (a *EvaluationUsecase) ListQuestion(page int, limit int) (model.Assesment, 
 	}
 	return assesment, totalData
 }
+
+func (a *EvaluationUsecase) GetQuestionGroups() []*model.QuestionGroup {
+	questionGroups := a.repository.FetchQuestionGroups()
+	return questionGroups
+}
+
+func (a *EvaluationUsecase) GetQuestionByGroup(groupName string, page int, limit int) (model.Assesment, int) {
+	assesment := model.Assesment{Status: "active"}
+	assesment.SetDuration(10)
+
+	questionsList, totalData, err := a.repository.FetchQuestionsByModule(groupName, page, limit)
+	if err != nil {
+		fmt.Println("ERROR StartEvaluation : ", err)
+	}
+	for _, questionRow := range questionsList {
+		// Decode choices from db then set as choice struct
+		cc := model.Choice{}
+		err := json.Unmarshal([]byte(questionRow.ChoicesDB), &cc)
+		if err != nil {
+			fmt.Println("ERROR StartEvaluation->Unmarshal : ", err)
+		}
+		questionRow.Choices = cc
+		assesment.AddQuestion(questionRow)
+	}
+	return assesment, totalData
+}
+
+func (a *EvaluationUsecase) RemoveGroupByname(name string) {
+	a.repository.DeleteGroupByName(name)
+}
