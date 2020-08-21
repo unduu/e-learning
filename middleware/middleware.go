@@ -15,6 +15,7 @@ import (
 
 type UserSession struct {
 	Username   string
+	Role       string
 	StatusCode int
 }
 
@@ -93,6 +94,7 @@ func (m *Middleware) ValidateToken(c *gin.Context) UserSession {
 		// User logged in session
 		session = UserSession{
 			Username:   tk.Username,
+			Role:       tk.Role,
 			StatusCode: tk.StatusCode,
 		}
 		return []byte(os.Getenv("token_password")), nil
