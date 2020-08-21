@@ -279,7 +279,7 @@ func (l *LearningHandler) AddCourseContent(c *gin.Context) {
 		return
 	}
 
-	l.LearningUsecase.AddCourseContent(course, section, req.Type, req.Title, req.Video)
+	l.LearningUsecase.AddCourseContent(course, section, req.SectionDesc, req.Type, req.Title, req.Video)
 
 	// Response
 	msg := "New lesson has been added"

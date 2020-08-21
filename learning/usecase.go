@@ -12,5 +12,5 @@ type Usecase interface {
 	AddCourse(title string, subtitle string, thumbnail string)
 	EditCourse(id int, title string, subtitle string, thumbnail string)
 	DeleteCourse(id int)
-	AddCourseContent(courseAlias string, sectionName string, module string, title string, video string)
+	AddCourseContent(courseAlias string, sectionName string, sectionDesc string, module string, title string, video string)
 }
