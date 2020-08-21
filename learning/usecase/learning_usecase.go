@@ -173,6 +173,16 @@ func (a *LearningUsecase) DeleteCourse(id int) {
 	a.repository.DeleteCourse(course)
 }
 
-func (a *LearningUsecase) AddCourseContent(id int, section string, name string, module string, title string, video string) {
+func (a *LearningUsecase) AddCourseContent(courseAlias string, sectionName string, lessonType string, title string, video string) {
 
+	content := &model.Lesson{
+		Type:  lessonType,
+		Title: title,
+		Video: video,
+	}
+	content.GeneratePermalink()
+
+	course := a.repository.GetCourseByAlias(courseAlias)
+	section := a.repository.FetchSectionContentByCourseAndSection(course.Id, sectionName)
+	a.repository.SaveCourseContent(course.Id, sectionName, section.Desc, content)
 }

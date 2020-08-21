@@ -33,7 +33,7 @@ func NewHttpLearningHandler(router *gin.RouterGroup, mw *middleware.Middleware, 
 	router.PUT("module/:id", mw.AuthMiddleware, handler.EditCourse)
 	router.DELETE("module/:id", mw.AuthMiddleware, handler.DeleteCourse)
 
-	//router.POST("module/:id/content", mw.AuthMiddleware, handler.AddCourseContent)
+	router.POST("course/:alias/:section/lessons", mw.AuthMiddleware, handler.AddCourseContent)
 }
 
 // ModuleList return list of courses / modules
@@ -253,6 +253,9 @@ func (l *LearningHandler) DeleteCourse(c *gin.Context) {
 
 // AddCourseContent
 func (l *LearningHandler) AddCourseContent(c *gin.Context) {
+	course := c.Params.ByName("alias")
+	section := c.Params.ByName("section")
+
 	// Form Data
 	var req RequestAddCourseContent
 	// Validation
@@ -276,13 +279,10 @@ func (l *LearningHandler) AddCourseContent(c *gin.Context) {
 		return
 	}
 
-	id := c.Params.ByName("id")
-	idInt, _ := strconv.Atoi(id)
-
-	l.LearningUsecase.AddCourseContent(idInt, req.Section, req.Name, req.Type, req.Title, req.Video)
+	l.LearningUsecase.AddCourseContent(course, section, req.Type, req.Title, req.Video)
 
 	// Response
-	msg := "New Course has been added"
+	msg := "New lesson has been added"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }

@@ -3,11 +3,11 @@ package model
 import "strings"
 
 type Lesson struct {
-	Type      string
-	Title     string
-	Permalink string
-	Duration  int
-	Video     string
+	Type      string `db:"type"`
+	Title     string `db:"title"`
+	Permalink string `db:"permalink"`
+	Duration  int    `db:"duration"`
+	Video     string `db:"content"`
 	Timebar   int
 	Progress  int
 }
@@ -30,4 +30,9 @@ func (l *Lesson) GetProgressName() (status string) {
 		status = "complete"
 	}
 	return status
+}
+
+func (l *Lesson) GeneratePermalink() {
+	lower := strings.ToLower(l.Title)
+	l.Permalink = strings.Replace(lower, " ", "-", -1)
 }

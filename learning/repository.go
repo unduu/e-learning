@@ -18,5 +18,6 @@ type Repository interface {
 	InsertCourse(course *model.Course) (affected int64)
 	UpdateCourse(course *model.Course) (affected int64)
 	DeleteCourse(course *model.Course) (affected int64)
-	InsertCourseContent(courseId int, content *model.Lesson) (affected int64)
+	SaveCourseContent(courseId int, sectionName string, sectionDesc string, content *model.Lesson) (affected int64)
+	FetchSectionContentByCourseAndSection(courseID int, sectionName string) *model.SectionLessons
 }

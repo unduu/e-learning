@@ -381,13 +381,68 @@ func (a *LearningRepository) DeleteCourse(course *model.Course) (affected int64)
 	return 1
 }
 
-func (a *LearningRepository) InsertCourseContent(courseId int, content *model.Lesson) (affected int64) {
-	_, err := a.conn.NamedQuery(`INSERT INTO course_contents (course_id, type, title, permalink, content, section_name, section_desc, duration) 
-											VALUES (:alias, :title, :subtitle, :thumbnail)`,
-		content)
-	if err != nil {
-		fmt.Println("ERROR InsertQuestion ", err)
-		return 0
+func (a *LearningRepository) SaveCourseContent(courseId int, sectionName string, sectionDesc string, content *model.Lesson) (affected int64) {
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"courseID":    courseId,
+		"type":        content.Type,
+		"title":       content.Title,
+		"permalink":   content.Permalink,
+		"content":     content.Video,
+		"sectionName": sectionName,
+		"sectionDesc": sectionDesc,
+		"duration":    content.Duration,
 	}
-	return 1
+	fmt.Println("queryParams ", queryParams)
+	// Compose query
+	query, err := a.conn.PrepareNamed(`
+		INSERT INTO course_contents 
+		(course_id, type, title, permalink, content, section_name, section_desc, duration) 
+		VALUES (:courseID, :type, :title, :permalink, :content, :sectionName, :sectionDesc, :duration)
+	`)
+	// Execute query
+	result, err := query.Exec(queryParams)
+	if err != nil {
+		fmt.Println("Error db SaveCourseContent->query.Exec : ", err)
+	}
+
+	affected, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("Error db InsertAnswer->RowsAffected : ", err)
+	}
+
+	return affected
+}
+
+func (a *LearningRepository) FetchSectionContentByCourseAndSection(courseID int, sectionName string) *model.SectionLessons {
+	// DB Response struct
+	sections := make([]*model.SectionLessons, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"courseID":    courseID,
+		"sectionName": sectionName,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`
+		SELECT section_name, section_desc
+		FROM course_contents 
+		WHERE course_id = :courseID AND section_name = :sectionName
+		LIMIT 1
+	`)
+	if err != nil {
+		fmt.Println("Error db GetCourseByAlias->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&sections, queryParams)
+	if err != nil {
+		fmt.Println("Error db FetchSectionContentByCourseAndSection->query.Select : ", err)
+	}
+	if len(sections) <= 0 {
+		return &model.SectionLessons{}
+	}
+	return sections[0]
 }

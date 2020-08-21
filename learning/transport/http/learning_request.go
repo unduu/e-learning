@@ -14,9 +14,7 @@ type RequestAddCourse struct {
 
 // Request Add new course content
 type RequestAddCourseContent struct {
-	Section string `form:"section" json:"section" xml:"section"  binding:"required"`
-	Name    string `form:"name" json:"name" xml:"name"  binding:"required"`
-	Type    string `form:"type" json:"type" xml:"type"  binding:"required"`
-	Title   string `form:"title" json:"title" xml:"title"  binding:"required"`
-	Video   string `form:"video" json:"video" xml:"video"  binding:"required"`
+	Type  string `form:"type" json:"type" xml:"type"  binding:"oneof=video quiz"`
+	Title string `form:"title" json:"title" xml:"title"  binding:"required"`
+	Video string `form:"video" json:"video" xml:"video"  binding:""`
 }
