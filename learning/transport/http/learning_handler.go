@@ -46,6 +46,7 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 	moduleArr := []Module{}
 	for _, course := range courses {
 		totalLessons := strconv.Itoa(course.GetTotalLesson()) + " Lessons"
+		totalSections := strconv.Itoa(len(course.Sections)) + " Sections"
 
 		// Formatting time duration
 		courseDuration := model.CourseDuration{Duration: course.CountDuration()}
@@ -61,6 +62,7 @@ func (l *LearningHandler) ModuleList(c *gin.Context) {
 			status,
 			statusCode,
 			course.Thumbnail,
+			totalSections,
 		}
 		moduleArr = append(moduleArr, c)
 	}
@@ -83,7 +85,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 	course := l.LearningUsecase.GetCourseLessons(alias, loggedIn.Username)
 	_, statusCode := course.GetParticipantStatus(loggedIn.Username)
 	// Response cannot access course
-	if statusCode == 0 {
+	if statusCode == 0 && loggedIn.Role != "admin" {
 		msg := "You not allowed to access this course"
 		err := make([]string, 0)
 		response.RespondErrorJSON(c.Writer, err, msg)

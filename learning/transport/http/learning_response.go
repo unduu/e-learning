@@ -1,14 +1,15 @@
 package http
 
 type Module struct {
-	Alias       string `json:"alias"`
-	Title       string `json:"title"`
-	Subtitle    string `json:"subtitle"`
-	TotalLesson string `json:"total_lessons"`
-	TotalHours  string `json:"total_hours"`
-	Status      string `json:"status"`
-	StatusCode  int    `json:"status_code"`
-	Thumbnail   string `json:"thumbnail"`
+	Alias        string `json:"alias"`
+	Title        string `json:"title"`
+	Subtitle     string `json:"subtitle"`
+	TotalLesson  string `json:"total_lessons"`
+	TotalHours   string `json:"total_hours"`
+	Status       string `json:"status"`
+	StatusCode   int    `json:"status_code"`
+	Thumbnail    string `json:"thumbnail"`
+	TotalSection string `json:"total_sections"`
 }
 
 type ResponseModuleList struct {
