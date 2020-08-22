@@ -30,8 +30,8 @@ func NewHttpLearningHandler(router *gin.RouterGroup, mw *middleware.Middleware, 
 	router.POST("module/:alias/:lesson/video", mw.AuthMiddleware, handler.SaveVideoProgress)
 
 	router.POST("module", mw.AuthMiddleware, handler.AddCourse)
-	router.PUT("module/:id", mw.AuthMiddleware, handler.EditCourse)
-	router.DELETE("module/:id", mw.AuthMiddleware, handler.DeleteCourse)
+	router.PUT("module/:alias", mw.AuthMiddleware, handler.EditCourse)
+	router.DELETE("module/:alias", mw.AuthMiddleware, handler.DeleteCourse)
 
 	router.POST("course/:alias/:section/lessons", mw.AuthMiddleware, handler.AddCourseContent)
 }
@@ -226,10 +226,9 @@ func (l *LearningHandler) EditCourse(c *gin.Context) {
 		response.RespondErrorJSON(c.Writer, errValidation)
 		return
 	}
-	id := c.Params.ByName("id")
-	idInt, _ := strconv.Atoi(id)
+	alias := c.Params.ByName("alias")
 
-	l.LearningUsecase.EditCourse(idInt, req.Title, req.Subtitle, req.Thumbnail)
+	l.LearningUsecase.EditCourse(alias, req.Title, req.Subtitle, req.Thumbnail)
 
 	// Response
 	msg := "Course data has been updated"
@@ -240,10 +239,9 @@ func (l *LearningHandler) EditCourse(c *gin.Context) {
 // DeleteCourse delete course
 func (l *LearningHandler) DeleteCourse(c *gin.Context) {
 	// Form Data
-	id := c.Params.ByName("id")
-	idInt, _ := strconv.Atoi(id)
+	alias := c.Params.ByName("alias")
 
-	l.LearningUsecase.DeleteCourse(idInt)
+	l.LearningUsecase.DeleteCourse(alias)
 
 	// Response
 	msg := "Course has been deleted"

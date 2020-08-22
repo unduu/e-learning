@@ -10,7 +10,7 @@ type Usecase interface {
 	SetLessonProgress(username string, lesson *model.Lesson) *model.Lesson
 	UpdateVideoProgress(username string, course string, lesson string, time int)
 	AddCourse(title string, subtitle string, thumbnail string)
-	EditCourse(id int, title string, subtitle string, thumbnail string)
-	DeleteCourse(id int)
+	EditCourse(alias string, title string, subtitle string, thumbnail string)
+	DeleteCourse(alias string)
 	AddCourseContent(courseAlias string, sectionName string, sectionDesc string, module string, title string, video string)
 }

@@ -16,7 +16,7 @@ type Repository interface {
 	UpdateParticipantStatus(username string, id int, newStatus int) (affected int64)
 	UpdateLearningVideoTimebar(username string, learningId int, time int) (affected int64)
 	InsertCourse(course *model.Course) (affected int64)
-	UpdateCourse(course *model.Course) (affected int64)
+	UpdateCourse(alias string, course *model.Course) (affected int64)
 	DeleteCourse(course *model.Course) (affected int64)
 	SaveCourseContent(courseId int, sectionName string, sectionDesc string, content *model.Lesson) (affected int64)
 	FetchSectionContentByCourseAndSection(courseID int, sectionName string) *model.SectionLessons

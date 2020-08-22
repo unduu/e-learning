@@ -361,9 +361,19 @@ func (a *LearningRepository) InsertCourse(course *model.Course) (affected int64)
 	return 1
 }
 
-func (a *LearningRepository) UpdateCourse(course *model.Course) (affected int64) {
-	_, err := a.conn.NamedQuery(`UPDATE courses SET alias = :alias, title = :title, subtitle = :subtitle, thumbnail = :thumbnail WHERE id = :id`,
-		course)
+func (a *LearningRepository) UpdateCourse(alias string, course *model.Course) (affected int64) {
+	param := map[string]interface{}{
+		"alias":     alias,
+		"title":     course.Title,
+		"subtitle":  course.Subtitle,
+		"thumbnail": course.Thumbnail,
+		"aliasNew":  course.Alias,
+	}
+	_, err := a.conn.NamedQuery(`
+			UPDATE courses 
+			SET alias = :aliasNew, title = :title, subtitle = :subtitle, thumbnail = :thumbnail 
+			WHERE alias = :alias`,
+		param)
 	if err != nil {
 		fmt.Println("ERROR UpdateQuestion ", err)
 		return 0
@@ -372,7 +382,7 @@ func (a *LearningRepository) UpdateCourse(course *model.Course) (affected int64)
 }
 
 func (a *LearningRepository) DeleteCourse(course *model.Course) (affected int64) {
-	_, err := a.conn.NamedQuery(`DELETE FROM courses WHERE id = :id`,
+	_, err := a.conn.NamedQuery(`DELETE FROM courses WHERE alias = :alias`,
 		course)
 	if err != nil {
 		fmt.Println("ERROR DeleteQuestion ", err)

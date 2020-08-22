@@ -153,22 +153,21 @@ func (a *LearningUsecase) AddCourse(title string, subtitle string, thumbnail str
 	a.repository.InsertCourse(course)
 }
 
-func (a *LearningUsecase) EditCourse(id int, title string, subtitle string, thumbnail string) {
+func (a *LearningUsecase) EditCourse(alias string, title string, subtitle string, thumbnail string) {
 	lower := strings.ToLower(title)
 	permalink := strings.Replace(lower, " ", "-", -1)
 	course := &model.Course{
-		Id:        id,
 		Alias:     permalink,
 		Title:     title,
 		Subtitle:  subtitle,
 		Thumbnail: thumbnail,
 	}
-	a.repository.UpdateCourse(course)
+	a.repository.UpdateCourse(alias, course)
 }
 
-func (a *LearningUsecase) DeleteCourse(id int) {
+func (a *LearningUsecase) DeleteCourse(alias string) {
 	course := &model.Course{
-		Id: id,
+		Alias: alias,
 	}
 	a.repository.DeleteCourse(course)
 }
