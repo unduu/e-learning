@@ -291,6 +291,33 @@ func (a *EvaluationRepository) FetchQuestionGroups() []*model.QuestionGroup {
 	return questionGroups
 }
 
+func (a *EvaluationRepository) FetchAvailableQuestionGroups() []*model.QuestionGroup {
+	// DB Response struct
+	questionGroups := make([]*model.QuestionGroup, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`
+		SELECT questions.module
+		FROM questions
+		LEFT JOIN course_contents cc on questions.module = cc.title
+		WHERE questions.module != "prepost" AND course_content_id is null
+	`)
+	if err != nil {
+		fmt.Println("Error db FetchAvailableQuestionGroups->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&questionGroups, queryParams)
+	if err != nil {
+		fmt.Println("Error db FetchAvailableQuestionGroups->query.Select : ", err)
+	}
+
+	return questionGroups
+}
+
 func (a *EvaluationRepository) FetchQuestionsByModule(moduleName string, page int, limit int) ([]*model.Question, int, error) {
 	offset := (page - 1) * limit
 	questions := make([]*model.Question, 0)

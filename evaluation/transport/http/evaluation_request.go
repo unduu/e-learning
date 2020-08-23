@@ -40,6 +40,7 @@ type RequestListQuestion struct {
 }
 
 type RequestListOfGroupsQuestion struct {
-	Page  int `form:"page,default=1" json:"page" xml:"page"  binding:"number"`
-	Limit int `form:"limit,default=5" json:"limit" xml:"limit" binding:"number"`
+	Status string `form:"status,default=available" json:"status" xml:"status"  binding:"oneof=available not_available"`
+	Page   int    `form:"page,default=1" json:"page" xml:"page"  binding:"number"`
+	Limit  int    `form:"limit,default=5" json:"limit" xml:"limit" binding:"number"`
 }

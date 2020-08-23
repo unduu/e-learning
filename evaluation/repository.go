@@ -14,6 +14,7 @@ type Repository interface {
 	DeleteQuestion(question model.Question)
 	GetAllQuestions(page int, limit int) ([]*model.Question, int, error)
 	FetchQuestionGroups() []*model.QuestionGroup
+	FetchAvailableQuestionGroups() []*model.QuestionGroup
 	FetchQuestionsByModule(moduleName string, page int, limit int) ([]*model.Question, int, error)
 	DeleteGroupByName(name string)
 }

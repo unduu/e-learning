@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"github.com/unduu/e-learning/evaluation"
+	"github.com/unduu/e-learning/evaluation/model"
 	customValidator "github.com/unduu/e-learning/helper/validator"
 	"github.com/unduu/e-learning/learning"
 	"github.com/unduu/e-learning/middleware"
@@ -773,7 +774,14 @@ func (e *EvaluationHandler) ListOfGroupsQuestion(c *gin.Context) {
 	}
 
 	questionGroupResp := []QuestionGroup{}
-	questionGroups := e.EvaluationUsecase.GetQuestionGroups()
+
+	questionGroups := []*model.QuestionGroup{}
+	if req.Status != "available" {
+		questionGroups = e.EvaluationUsecase.GetAvailableQuestionGroups()
+	} else {
+		questionGroups = e.EvaluationUsecase.GetQuestionGroups()
+	}
+
 	for _, group := range questionGroups {
 		questionType := "prepost"
 		if group.Name != "prepost" {

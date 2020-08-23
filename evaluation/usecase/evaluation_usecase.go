@@ -241,6 +241,11 @@ func (a *EvaluationUsecase) GetQuestionGroups() []*model.QuestionGroup {
 	return questionGroups
 }
 
+func (a *EvaluationUsecase) GetAvailableQuestionGroups() []*model.QuestionGroup {
+	questionGroups := a.repository.FetchAvailableQuestionGroups()
+	return questionGroups
+}
+
 func (a *EvaluationUsecase) GetQuestionByGroup(groupName string, page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
 	assesment.SetDuration(10)
