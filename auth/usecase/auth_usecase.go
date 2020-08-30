@@ -72,7 +72,7 @@ func (a *AuthUsecase) Register(fullname string, phone string, email string, user
 
 	ok := a.repository.InsertNewUser(user, vcode)
 	if ok > 0 {
-		body := "Thank you for registering to Menthorsip Program. Please enter this verification code to activate your account. Your verification code is " + vcode
+		body := "Your verification code is " + vcode + ". Thank you for registering to Menthorsip Program. Please enter this verification code to activate your account."
 		a.SendVerificationCode(vcode, phone, body)
 	}
 	return vcode, ok
