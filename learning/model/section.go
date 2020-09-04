@@ -21,3 +21,23 @@ type Section struct {
 func (s *Section) AddLesson(lesson *Lesson) {
 	s.Lessons = append(s.Lessons, lesson)
 }
+
+func (s *Section) GetParticipantStatus(username string) (status string, code int) {
+	code = 0
+	for _, lesson := range s.Lessons {
+		if lesson.IsQuiz() && lesson.Progress == 2 {
+			code = 1
+		}
+	}
+	switch code {
+	case 0:
+		status = "Locked"
+	case 1:
+		status = "Open"
+	case 2:
+		status = "Completed"
+
+	}
+
+	return status, code
+}

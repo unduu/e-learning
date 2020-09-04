@@ -28,9 +28,11 @@ type Lesson struct {
 }
 
 type Section struct {
-	Section string   `json:"section"`
-	Name    string   `json:"name"`
-	Lessons []Lesson `json:"lessons"`
+	Section    string   `json:"section"`
+	Name       string   `json:"name"`
+	Lessons    []Lesson `json:"lessons"`
+	Status     string   `json:"status"`
+	StatusCode int      `json:"status_code"`
 }
 
 type ResponseLearningContent struct {

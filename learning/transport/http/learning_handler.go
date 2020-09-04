@@ -92,7 +92,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 		return
 	}
 
-	for _, sectionObj := range course.Sections {
+	for i, sectionObj := range course.Sections {
 		lessonResArr := []Lesson{}
 		for _, lessonObj := range sectionObj.Lessons {
 			// Formatting time duration
@@ -110,10 +110,19 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 			}
 			lessonResArr = append(lessonResArr, lessonRes)
 		}
+
+		// Set status to open for first section
+		sectionStatus, sectionCode := "open", 0
+		if i != 0 {
+			sectionStatus, sectionCode = course.Sections[i-1].GetParticipantStatus(loggedIn.Username)
+		}
+
 		sectionRes := Section{
-			Section: sectionObj.Name,
-			Name:    sectionObj.Desc,
-			Lessons: lessonResArr,
+			Section:    sectionObj.Name,
+			Name:       sectionObj.Desc,
+			Lessons:    lessonResArr,
+			Status:     sectionStatus,
+			StatusCode: sectionCode,
 		}
 		contentArr = append(contentArr, sectionRes)
 	}
