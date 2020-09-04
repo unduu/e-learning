@@ -78,7 +78,7 @@ func (e *EvaluationHandler) PreEvaluation(c *gin.Context) {
 	// Check if user not join pre test yet
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
-		msg := "You already join pre test"
+		msg := "Anda telah mengikuti pre test"
 		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
@@ -161,7 +161,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 	if exists {
 		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
 		if answerObj.IsPass() {
-			msg := "You already pass this post test"
+			msg := "Anda telah lulus post test"
 			err := struct{}{}
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
@@ -188,7 +188,7 @@ func (e *EvaluationHandler) PostEvaluation(c *gin.Context) {
 		nextPage = totalPage
 	}
 
-	msg := "List of questions"
+	msg := "Daftar pertanyaan"
 	res := PreEvaluationResponse{
 		StartTime: assesment.Start,
 		EndTime:   assesment.End,
@@ -254,7 +254,7 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 	if exists {
 		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
 		if answerObj.IsPass() {
-			msg := "You already pass this quiz"
+			msg := "Anda telah lulus kuis"
 			err := struct{}{}
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
@@ -274,7 +274,7 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 		nextPage = totalPage
 	}
 
-	msg := "List of questions"
+	msg := "Daftar pertanyaan"
 	res := PreEvaluationResponse{
 		StartTime: assesment.Start,
 		EndTime:   assesment.End,
@@ -336,7 +336,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	// Check if user not join pre test yet
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if exists {
-		msg := "You already join pre test"
+		msg := "Anda telah mengikuti pre test"
 		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
@@ -349,7 +349,7 @@ func (e *EvaluationHandler) ProcessEvaluationAnswer(c *gin.Context) {
 	e.EvaluationUsecase.SaveAnswer(loggedIn.Username, "pretest", req.Answer, answerObj.Grade)
 	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
 
-	msg := "Thank you, We have recieve your answer"
+	msg := "Terima kasih, kami telah menerima jawaban anda"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -384,7 +384,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	// Check if user not join pre test yet
 	exists, _ := e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "pretest")
 	if !exists {
-		msg := "You have to join pre test first"
+		msg := "Anda harus mengikuti pre test terlebih dahulu"
 		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
@@ -392,7 +392,7 @@ func (e *EvaluationHandler) ProcessPostAnswer(c *gin.Context) {
 	// Check if user already join post test
 	exists, _ = e.EvaluationUsecase.IsAnswerExists(loggedIn.Username, "posttest")
 	if exists {
-		msg := "You already join post test"
+		msg := "Anda telah mengikuti post test"
 		err := struct{}{}
 		response.RespondSuccessJSON(c.Writer, err, msg)
 		return
@@ -441,7 +441,7 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 	if exists {
 		answerObj := e.EvaluationUsecase.CheckAnswerResult(answer.Selected)
 		if answerObj.IsPass() {
-			msg := "You already pass this quiz"
+			msg := "Anda telah lulus kuis"
 			err := struct{}{}
 			response.RespondSuccessJSON(c.Writer, err, msg)
 			return
@@ -462,7 +462,7 @@ func (e *EvaluationHandler) ProcessQuizAnswer(c *gin.Context) {
 		e.LearningUsecase.UpdateUserCourseProgress(loggedIn.Username, req.Title)
 	}
 
-	msg := "Thank you, We have recieve your answer"
+	msg := "Terima kasih, kami telah menerima jawaban anda"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -476,7 +476,7 @@ func (e *EvaluationHandler) ResetPrePostStatus(c *gin.Context) {
 	e.LearningUsecase.SetDefaultCourse(loggedIn.Username)
 
 	// Response
-	msg := "Your pre post status has been reset"
+	msg := "Pre test status anda telah diatur ulang"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -488,7 +488,7 @@ func (e *EvaluationHandler) ResetPostStatus(c *gin.Context) {
 	e.EvaluationUsecase.ArchivedPostAnswer(loggedIn.Username)
 
 	// Response
-	msg := "Your post test status has been reset"
+	msg := "Post test status anda telah diatur ulang"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -560,7 +560,7 @@ func (e *EvaluationHandler) AddQuestion(c *gin.Context) {
 	e.EvaluationUsecase.AddQuestion(req.Question, groupName, req.Choices, req.Answer)
 
 	// Response
-	msg := "New question has been added"
+	msg := "Pertanyaan baru telah ditambahkan"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -595,7 +595,7 @@ func (e *EvaluationHandler) EditQuestion(c *gin.Context) {
 	e.EvaluationUsecase.EditQuestion(i, req.Question, req.Choices, req.Answer)
 
 	// Response
-	msg := "This question has been updated"
+	msg := "Pertanyaan ini telah diupdate"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -608,7 +608,7 @@ func (e *EvaluationHandler) DeleteQuestion(c *gin.Context) {
 	e.EvaluationUsecase.DeleteQuestion(i)
 
 	// Response
-	msg := "This question has been deleted"
+	msg := "Pertanyaan ini telah dihapus"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -718,7 +718,7 @@ func (e *EvaluationHandler) ListOfQuestionsInGroup(c *gin.Context) {
 		nextPage = totalPage
 	}
 
-	msg := "List of questions"
+	msg := "Daftar pertanyaan"
 	res := ListQuestionResponse{
 		Pagination: PaginationResponse{
 			TotalData:   totalData,

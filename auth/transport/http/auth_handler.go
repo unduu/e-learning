@@ -55,7 +55,7 @@ func (a *AuthHandler) Login(c *gin.Context) {
 	// Response
 	if token == "" {
 		errResponse := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, errResponse, "Incorrect username or password")
+		response.RespondErrorJSON(c.Writer, errResponse, "Username atau password anda salah")
 		return
 	}
 	msg := "Welcome " + req.Username
@@ -89,7 +89,7 @@ func (a *AuthHandler) Register(c *gin.Context) {
 	user, token := a.AuthUsecase.Login(req.Username, req.Password)
 
 	// Respponse
-	msg := "We have sent a verification code to your email address"
+	msg := "Kami telah mengirimkan kode verifikasi ke email anda"
 	res := LoginResponseTemp{
 		User:       User{req.Username, "menthor", user.Status, user.StatusCode},
 		Token:      token,
@@ -121,12 +121,12 @@ func (a *AuthHandler) Verify(c *gin.Context) {
 
 	// Response
 	if success <= 0 {
-		msg := "Incorrect code"
-		err := response.Error{"code", "Enter a valid activation code"}
+		msg := "Kode yanng anda masukkan salah"
+		err := response.Error{"code", "Masukkan kode aktifasi yang benar"}
 		response.RespondErrorJSON(c.Writer, err, msg)
 		return
 	}
-	msg := "Your account is activated"
+	msg := "Akun anda telah aktif"
 	res := VerifyResponse{
 		User: User{loggedIn.Username, "menthor", "active", loggedIn.StatusCode},
 	}
@@ -154,12 +154,12 @@ func (a *AuthHandler) ForgotPassword(c *gin.Context) {
 	phoneNormalize := phonenumber.Parse(req.Phone, "ID")
 	affected, code := a.AuthUsecase.ForgotPassword(phoneNormalize)
 	if affected > 0 {
-		body := "You requested to reset your password, please enter this code " + code
+		body := "Anda telah mengirim permintaan ubah kata sandi, masukkan code berikut " + code
 		a.AuthUsecase.SendVerificationCode(code, phoneNormalize, body)
 	}
 
 	// Response
-	msg := "We have sent a confirmation code to reset your password"
+	msg := "Kami telah mengirimkan kode untuk mengatur ulang password anda"
 	res := struct{}{}
 	//res := ForgotPasswordResponseTemp{ConfirmationCode: code}
 	response.RespondSuccessJSON(c.Writer, res, msg)
@@ -185,7 +185,7 @@ func (a *AuthHandler) ResetPassword(c *gin.Context) {
 	a.AuthUsecase.ResetPassword(req.PasswordNew, req.PasswordKey)
 
 	// Response
-	msg := "Your password has been reset successfully"
+	msg := "Password baru anda telah diatur ulang"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
@@ -201,19 +201,19 @@ func (a *AuthHandler) ResendVerifCode(c *gin.Context) {
 	// Response Error
 	if !ok {
 		errResponse := make([]string, 0)
-		response.RespondErrorJSON(c.Writer, errResponse, "You have entered wrong phone number")
+		response.RespondErrorJSON(c.Writer, errResponse, "Nomor handphone yang anda masukkan salah")
 		return
 	}
 
 	// Response Success
-	msg := "We have sent a verification code to your phone number"
+	msg := "Kami telah mengirimkan kode verifikasi ke handphone anda"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
 
 // Logout remove user access token
 func (a *AuthHandler) Logout(c *gin.Context) {
-	msg := "You have successfully logged out"
+	msg := "Anda telah keluar"
 	res := struct{}{}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
