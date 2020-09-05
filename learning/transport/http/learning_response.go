@@ -1,5 +1,9 @@
 package http
 
+import (
+	evaluationModel "github.com/unduu/e-learning/evaluation/model"
+)
+
 type Module struct {
 	Alias        string `json:"alias"`
 	Title        string `json:"title"`
@@ -16,15 +20,23 @@ type ResponseModuleList struct {
 	Modules []Module `json:"modules"`
 }
 
+type LessonSplit struct {
+	Type    string                  `json:"type"`
+	Video   string                  `json:"video"`
+	Answer  string                  `json:"answer"`
+	Choices *evaluationModel.Choice `json:"choices"`
+}
+
 type Lesson struct {
-	Type         string `json:"type"`
-	Title        string `json:"title"`
-	Permalink    string `json:"permalink"`
-	Duration     string `json:"duration"`
-	Video        string `json:"video"`
-	Timebar      int    `json:"timebar"`
-	Progress     string `json:"progress"`
-	ProgressCode int    `json:"progress_code"`
+	Type         string        `json:"type"`
+	Title        string        `json:"title"`
+	Permalink    string        `json:"permalink"`
+	Duration     string        `json:"duration"`
+	Video        string        `json:"video"`
+	Timebar      int           `json:"timebar"`
+	Progress     string        `json:"progress"`
+	ProgressCode int           `json:"progress_code"`
+	LessonSplit  []LessonSplit `json:"lesson_split"`
 }
 
 type Section struct {

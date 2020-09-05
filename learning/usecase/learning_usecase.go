@@ -41,6 +41,7 @@ func (a *LearningUsecase) GetCourseLessons(alias string, username string) (cours
 	course.AddParticipant(participants)
 	data := a.repository.GetLessonsByCourseId(course.Id, username)
 	for _, row := range data {
+		lessonSplit := a.repository.FetchCourseContentSplit(row.LessonID)
 		lesson := &model.Lesson{
 			Type:      row.Type,
 			Title:     row.Title,
@@ -49,6 +50,7 @@ func (a *LearningUsecase) GetCourseLessons(alias string, username string) (cours
 			Video:     row.Video,
 			Timebar:   row.Timebar,
 			Progress:  0,
+			Split:     lessonSplit,
 		}
 
 		currSection := course.GetSection(row.Name)

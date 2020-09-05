@@ -10,6 +10,7 @@ type Lesson struct {
 	Video     string `db:"content"`
 	Timebar   int
 	Progress  int
+	Split     []*LessonSplit
 }
 
 func (l *Lesson) IsQuiz() bool {

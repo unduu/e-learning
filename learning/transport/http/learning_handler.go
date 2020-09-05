@@ -98,6 +98,18 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 			// Formatting time duration
 			courseDuration := model.CourseDuration{Duration: lessonObj.Duration}
 			l.LearningUsecase.SetLessonProgress(loggedIn.Username, lessonObj)
+			// Format lessonsplit question choices
+			lessonSplits := make([]LessonSplit, 0)
+
+			for _, split := range lessonObj.Split {
+				split.FormatChoices()
+				lessonSplits = append(lessonSplits, LessonSplit{
+					Type:    split.Type,
+					Video:   split.Video,
+					Answer:  split.Answer,
+					Choices: split.Choices,
+				})
+			}
 			lessonRes := Lesson{
 				Type:         lessonObj.Type,
 				Title:        lessonObj.Title,
@@ -107,6 +119,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 				Timebar:      lessonObj.Timebar,
 				Progress:     lessonObj.GetProgressName(),
 				ProgressCode: lessonObj.Progress,
+				LessonSplit:  lessonSplits,
 			}
 			lessonResArr = append(lessonResArr, lessonRes)
 		}

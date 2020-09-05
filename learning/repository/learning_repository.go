@@ -456,3 +456,28 @@ func (a *LearningRepository) FetchSectionContentByCourseAndSection(courseID int,
 	}
 	return sections[0]
 }
+
+// FetchCourseContentSplit ...
+func (a *LearningRepository) FetchCourseContentSplit(lessonId int) []*model.LessonSplit {
+	// DB Response struct
+	lessonSplit := make([]*model.LessonSplit, 0)
+
+	// Data for query
+	queryParams := map[string]interface{}{
+		"content_id": lessonId,
+	}
+
+	// Compose query
+	query, err := a.conn.PrepareNamed(`SELECT video_file, quiz_choices, quiz_answer  FROM course_contents_split WHERE content_id = :content_id ORDER BY content_order DESC;`)
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->PrepareNamed : ", err)
+	}
+
+	// Execute query
+	err = query.Select(&lessonSplit, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetLessonsByCourseId->query.Get : ", err)
+	}
+
+	return lessonSplit
+}
