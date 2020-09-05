@@ -32,7 +32,7 @@ type Lesson struct {
 	Title        string        `json:"title"`
 	Permalink    string        `json:"permalink"`
 	Duration     string        `json:"duration"`
-	Video        string        `json:"video"`
+	Video        string        `json:"content"`
 	Timebar      int           `json:"timebar"`
 	Progress     string        `json:"progress"`
 	ProgressCode int           `json:"progress_code"`
