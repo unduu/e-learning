@@ -112,7 +112,7 @@ func (l *LearningHandler) LearningContent(c *gin.Context) {
 		}
 
 		// Set status to open for first section
-		sectionStatus, sectionCode := "open", 0
+		sectionStatus, sectionCode := "open", 1
 		if i != 0 {
 			sectionStatus, sectionCode = course.Sections[i-1].GetParticipantStatus(loggedIn.Username)
 		}
