@@ -520,9 +520,10 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 	grade := fmt.Sprintf("%.f", result.Grade)
 	msg := "To Pass get 100%"
 	res := PostTestResultResponse{
-		Grade:  grade + "%",
-		Pass:   result.Pass,
-		Status: postTestStatus,
+		Grade:          grade + "%",
+		Pass:           result.Pass,
+		Status:         postTestStatus,
+		CertificateUrl: "Coursera%20XZS4R52UDZFN.pdf",
 	}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
