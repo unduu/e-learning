@@ -512,8 +512,10 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 	}
 
 	// User complete past test
+	certificate := ""
 	if result.Pass && postTestStatus == 1 {
 		postTestStatus = 2
+		certificate = "Coursera%20XZS4R52UDZFN.pdf"
 	}
 
 	// Response
@@ -523,7 +525,7 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 		Grade:          grade + "%",
 		Pass:           result.Pass,
 		Status:         postTestStatus,
-		CertificateUrl: "Coursera%20XZS4R52UDZFN.pdf",
+		CertificateUrl: certificate,
 	}
 	response.RespondSuccessJSON(c.Writer, res, msg)
 }
