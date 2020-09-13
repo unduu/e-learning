@@ -520,7 +520,7 @@ func (e *EvaluationHandler) PostTestResult(c *gin.Context) {
 
 	// Response
 	grade := fmt.Sprintf("%.f", result.Grade)
-	msg := "To Pass get 100%"
+	msg := "To Pass get 80%"
 	res := PostTestResultResponse{
 		Grade:          grade + "%",
 		Pass:           result.Pass,

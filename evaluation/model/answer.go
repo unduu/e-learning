@@ -21,7 +21,7 @@ type Answer struct {
 }
 
 func (a *Answer) IsPass() bool {
-	if a.Grade >= 100 {
+	if a.Grade >= 80 {
 		return true
 	}
 	return false
