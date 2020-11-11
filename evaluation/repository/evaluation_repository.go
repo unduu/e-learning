@@ -35,7 +35,7 @@ func (a *EvaluationRepository) GetQuestions(module string, page int, limit int) 
 		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
 	}
 
-	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions WHERE module = :module`)
+	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions WHERE module = :module LIMIT 5`)
 	if err != nil {
 		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
 	}
