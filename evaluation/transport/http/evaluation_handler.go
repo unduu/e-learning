@@ -260,8 +260,8 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 			return
 		}
 	}
-
-	assesment, totalData := e.EvaluationUsecase.StartEvaluation(req.Title, req.Page, 5)
+	req.Limit = 5
+	assesment, totalData := e.EvaluationUsecase.StartEvaluation(req.Title, req.Page, req.Limit)
 
 	// Pagination
 	totalPage := int(math.Round(float64(totalData) / float64(req.Limit)))
