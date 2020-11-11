@@ -274,6 +274,7 @@ func (e *EvaluationHandler) QuizEvaluation(c *gin.Context) {
 		nextPage = totalPage
 	}
 
+	totalData = 5
 	msg := "Daftar pertanyaan"
 	res := PreEvaluationResponse{
 		StartTime: assesment.Start,
