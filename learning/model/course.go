@@ -64,7 +64,11 @@ func (c *Course) CountDuration() (total int) {
 
 func (c *Course) GetTotalLesson() (total int) {
 	for _, section := range c.Sections {
-		total = total + len(section.Lessons)
+		for _, lesson := range section.Lessons {
+			if lesson.Type != "quiz" {
+				total = total + 1
+			}
+		}
 	}
 	return total
 }
