@@ -53,6 +53,64 @@ func (a *EvaluationRepository) GetQuestions(module string, page int, limit int) 
 	return questions, count.Total, err
 }
 
+// GetQuestions return question list
+func (a *EvaluationRepository) GetPrePostQuestions() ([]*model.Question, int, error) {
+	questions := make([]*model.Question, 0)
+
+	var count struct {
+		Total int `db:"total"`
+	}
+	queryParams := map[string]interface{}{}
+	query, err := a.conn.PrepareNamed(`
+		select id, type, attachment_type, attachment, question, choices
+		from (
+				 select
+					 id,
+					 type,
+					 attachment_type,
+					 attachment,
+					 choices,
+					 question,
+					 module,
+					 @group_rank := IF(@current_group=module, @group_rank + 1, 1) as  group_rank,
+					 @current_group := module
+				 from (
+						  select
+							  id,
+							  type,
+							  attachment_type,
+							  attachment,
+							  choices,
+							  question,
+							  module,
+							  CONCAT(module, '-', round(rand() * 100)) as rand_rank
+						  from questions order by rand_rank
+					  ) tmp
+			 ) ranked
+		where group_rank <= 2 AND module !="prepost" order by module
+	`)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	queryTotal, err := a.conn.PrepareNamed(`SELECT COUNT(*) AS total FROM questions WHERE module != "prepost GROUP BY module"`)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->PrepareNamed : ", err)
+	}
+
+	err = query.Select(&questions, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+
+	err = queryTotal.Get(&count, queryParams)
+	if err != nil {
+		fmt.Println("Error db GetQuestions->query.Get : ", err)
+	}
+	count.Total = 10
+	return questions, count.Total, err
+}
+
 // GetQuestionByIds return question by specified id
 func (a *EvaluationRepository) GetQuestionByIds(ids []string, page int, limit int) ([]*model.Question, int, error) {
 	offset := (page - 1) * limit

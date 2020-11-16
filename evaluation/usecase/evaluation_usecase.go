@@ -24,7 +24,7 @@ func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) 
 	assesment := model.Assesment{Status: "active"}
 	assesment.SetDuration(15)
 
-	questionsList, totalData, err := a.repository.GetQuestions(module, page, limit)
+	questionsList, totalData, err := a.repository.GetPrePostQuestions()
 
 	if err != nil {
 		fmt.Println("ERROR StartEvaluation : ", err)
