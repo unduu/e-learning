@@ -1,7 +1,6 @@
 package model
 
 import (
-	"math/rand"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type Assesment struct {
 }
 
 func (a *Assesment) SetDuration(dur int32) {
-	durTime := time.Duration(rand.Int31n(dur))
+	durTime := time.Duration(dur)
 	layout := "2006-01-02 15:04:05"
 	startTime := time.Now()
 	endTime := startTime.Add(time.Minute * durTime)
