@@ -100,8 +100,8 @@ func (a *AuthUsecase) ResetPassword(password string, passkey string) (affected i
 
 func (a *AuthUsecase) SendVerificationCode(code string, phone string, body string) {
 	// Set account keys & information
-	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
-	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
+	accountSid := "AC8d1daa1db11271fc80bd0a8ed2c05464" //os.Getenv("TWILIO_ACCOUNT_SID")
+	authToken := "b2db36b23c9515630fe90cefc23b003e"    //os.Getenv("TWILIO_AUTH_TOKEN")
 	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
 
 	msgData := url.Values{}
