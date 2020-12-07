@@ -23,8 +23,14 @@ func NewEvaluationUsecase(repository evaluation.Repository) *EvaluationUsecase {
 func (a *EvaluationUsecase) StartEvaluation(module string, page int, limit int) (model.Assesment, int) {
 	assesment := model.Assesment{Status: "active"}
 	assesment.SetDuration(15)
-
-	questionsList, totalData, err := a.repository.GetPrePostQuestions()
+	var questionsList []*model.Question
+	var totalData int
+	var err error
+	if module == "prepost" {
+		questionsList, totalData, err = a.repository.GetPrePostQuestions()
+	} else {
+		questionsList, totalData, err = a.repository.FetchQuestionsByModule(module, page, limit)
+	}
 
 	if err != nil {
 		fmt.Println("ERROR StartEvaluation : ", err)

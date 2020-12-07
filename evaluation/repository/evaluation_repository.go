@@ -392,7 +392,7 @@ func (a *EvaluationRepository) FetchQuestionsByModule(moduleName string, page in
 			SELECT id, type, attachment_type, attachment, question, choices 
 			FROM questions 
 			WHERE module = :module 
-			ORDER BY id DESC 
+			ORDER BY RAND()
 			LIMIT :offset, :limit 
 	`)
 	if err != nil {
