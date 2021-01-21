@@ -3,7 +3,6 @@ package usecase
 import (
 	"crypto/md5"
 	"crypto/rand"
-	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/unduu/e-learning/auth"
@@ -110,13 +109,13 @@ func (a *AuthUsecase) SendVerificationCode(code string, phone string, body strin
 	msgData.Set("Body", body)
 	msgDataReader := *strings.NewReader(msgData.Encode())
 
-	client := &http.Client{}
+	//client := &http.Client{}
 	req, _ := http.NewRequest("POST", urlStr, &msgDataReader)
 	req.SetBasicAuth(accountSid, authToken)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, _ := client.Do(req)
+	/*resp, _ := client.Do(req)
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		var data map[string]interface{}
 		decoder := json.NewDecoder(resp.Body)
@@ -126,7 +125,7 @@ func (a *AuthUsecase) SendVerificationCode(code string, phone string, body strin
 		}
 	} else {
 		fmt.Println(resp.Status)
-	}
+	}*/
 }
 
 func (a *AuthUsecase) ResendVerificationCode(username string) bool {
