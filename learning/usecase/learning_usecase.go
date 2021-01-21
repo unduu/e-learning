@@ -130,7 +130,7 @@ func (a *LearningUsecase) SetLessonProgress(username string, lesson *model.Lesso
 		}
 
 		lesson.Progress = 1
-		if answer.Grade >= 60 {
+		if answer.Grade >= 30 {
 			lesson.Progress = 2
 		}
 
